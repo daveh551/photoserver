@@ -95,10 +95,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\PhotosController_Tests\FakeControllerContext.cs" />
     <Compile Include="Controllers\PhotosController_Tests\PostAction_Tests.cs" />
     <Compile Include="ObjectMother.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\ValuesControllerTest.cs" />
+    <Compile Include="Support\FakeDataSource.cs" />
+    <Compile Include="Support\FakeRepository.cs" />
+    <Compile Include="Support\ObjectMother.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
@@ -107,6 +111,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PhotoServer.DataAccessLayer\PhotoServer.DataAccessLayer.csproj">
+      <Project>{a3ad1891-a743-4912-878b-8d31ce2aad2e}</Project>
+      <Name>PhotoServer.DataAccessLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PhotoServer.Domain\PhotoServer.Domain.csproj">
+      <Project>{f8be44f9-5540-4d9d-84f8-a2614cd30987}</Project>
+      <Name>PhotoServer.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PhotoServer\PhotoServer.csproj">
       <Project>{CE764A41-3E9D-425A-96E8-3BC6E76B2CA3}</Project>
       <Name>PhotoServer</Name>

@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhotoServer.DataAccessLayer
+namespace PhotoServer.Domain
 {
-    public class Class1
+    public interface IEntity<TKey>
     {
+        TKey Id { get; set; }
     }
 }

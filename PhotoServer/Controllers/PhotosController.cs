@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Security;
 
 namespace PhotoServer.Controllers
 {
@@ -22,8 +23,11 @@ namespace PhotoServer.Controllers
         }
 
         // POST api/photos
-        public void Post([FromBody]string value)
+        
+        [Authorize(Roles="admin")]
+        public HttpResponseMessage Post(string path)
         {
+            return new HttpResponseMessage();
         }
 
         // PUT api/photos/5

@@ -237,6 +237,16 @@
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PhotoServer.DataAccessLayer\PhotoServer.DataAccessLayer.csproj">
+      <Project>{a3ad1891-a743-4912-878b-8d31ce2aad2e}</Project>
+      <Name>PhotoServer.DataAccessLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PhotoServer.Domain\PhotoServer.Domain.csproj">
+      <Project>{f8be44f9-5540-4d9d-84f8-a2614cd30987}</Project>
+      <Name>PhotoServer.Domain</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

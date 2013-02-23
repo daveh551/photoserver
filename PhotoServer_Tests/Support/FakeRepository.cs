@@ -7,11 +7,20 @@ using PhotoServer.DataAccessLayer;
 
 namespace PhotoServer_Tests.Support
 {
-    class FakeRepository<T,TKey> : IRepository<T, TKey> where T : PhotoServer.Domain.IEntity<TKey>
+    class FakeRepository<T>: IRepository<T, Guid> where T : PhotoServer.Domain.IEntity<Guid>
     {
+        private List<T> data;
+
+        private List<T> addedData; 
+        public FakeRepository()
+        {
+            data = new List<T>();
+            addedData = new List<T>();
+        }
         public void Add(T item)
         {
-            throw new NotImplementedException();
+            data.Add(item);
+            addedData.Add(item);
         }
 
         public void Remove(T item)
@@ -19,19 +28,31 @@ namespace PhotoServer_Tests.Support
             throw new NotImplementedException();
         }
 
-        public List<T> FindAll()
+        public IEnumerable<T> FindAll()
+        {
+            return  data;
+        }
+
+        public T FindById(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public T FindById(TKey id)
+        public IEnumerable<T> Find(Func<T, bool> predicate)
         {
             throw new NotImplementedException();
         }
 
-        public List<T> Find(Func<T, bool> predicate)
+        public void SaveChanges()
         {
-            throw new NotImplementedException();
+            foreach (var item in addedData)
+            {
+                if (item.Id == default(Guid))
+                {
+                    item.Id = Guid.NewGuid();
+                }
+            }
+            addedData.Clear();
         }
     }
 }

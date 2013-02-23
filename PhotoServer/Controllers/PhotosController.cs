@@ -1,15 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Formatting;
+using System.Web;
 using System.Web.Http;
 using System.Web.Security;
+using PhotoServer.DataAccessLayer;
+using PhotoServer.Domain;
 
 namespace PhotoServer.Controllers
 {
     public class PhotosController : ApiController
     {
+        private IPhotoDataSource _db;
+	    private string appHome = string.Empty;
+
+        public PhotosController(IPhotoDataSource Db)
+        {
+	        appHome = Path.GetDirectoryName(this.GetType().Assembly.Location);
+	        appHome = Path.GetDirectoryName(appHome);
+
+            _db = Db;
+        }
         // GET api/photos
         public IEnumerable<string> Get()
         {
@@ -27,7 +42,53 @@ namespace PhotoServer.Controllers
         [Authorize(Roles="admin")]
         public HttpResponseMessage Post(string path)
         {
-            return new HttpResponseMessage();
+            var data = new PhotoData {Path = path};
+            _db.photoData.Add(data);
+            _db.photoData.SaveChanges();
+	        var request = ControllerContext.Request;
+			if (request.Content == null || request.Content.Headers == null || request.Content.Headers.ContentType == null)
+			{ return new HttpResponseMessage(HttpStatusCode.BadRequest);}
+	        var contentType = request.Content.Headers.ContentType.MediaType;
+			if (contentType == "image/jpeg" || contentType == "image/jpg")
+			{
+				var imageSize = request.Content.Headers.ContentLength;
+				var image = request.Content.ReadAsStreamAsync().Result;
+				byte[] imageArray;
+				if (!imageSize.HasValue)
+				{
+					imageSize = (int) image.Length;
+				}
+				var imageSz = (int) imageSize.Value;
+				imageArray = new byte[imageSz];
+				int bytesRead = 0;
+				while (bytesRead < imageSz)
+				{
+					bytesRead +=image.Read(imageArray, bytesRead,  imageSz - bytesRead);
+				}
+
+				while (path.Contains("/"))
+					path = path.Replace('/', '\\');
+				path = Path.Combine(appHome, path);
+				
+				if (!File.Exists(path))
+				{
+					var dir = Path.GetDirectoryName(path);
+					if (! Directory.Exists(dir))
+						Directory.CreateDirectory(dir);
+					
+					var newImage = new BinaryWriter(new FileStream(path, FileMode.CreateNew));
+					newImage.Write(imageArray);
+				}
+			}
+			else
+			{
+				return new HttpResponseMessage(HttpStatusCode.BadRequest);
+			}
+            var response = new HttpResponseMessage(HttpStatusCode.Created);
+	        var uri =new Uri("/api/Photos/" + data.Id.ToString(), UriKind.Relative);
+	        response.Headers.Location = uri;
+	        response.Content = new ObjectContent<PhotoData>(data, new JsonMediaTypeFormatter());
+            return response;
         }
 
         // PUT api/photos/5

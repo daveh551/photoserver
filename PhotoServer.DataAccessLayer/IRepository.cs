@@ -1,4 +1,5 @@
-﻿using PhotoServer.Domain;
+﻿using System.Linq;
+using PhotoServer.Domain;
 using System;
 using System.Collections.Generic;
 
@@ -8,9 +9,10 @@ namespace PhotoServer.DataAccessLayer
     {
         void Add(T item);
         void Remove(T item);
-        List<T> FindAll();
+        IEnumerable<T> FindAll();
         T FindById(TKey id);
-        List<T> Find(Func<T, bool> predicate);
+        IEnumerable<T> Find(Func<T, bool> predicate);
+        void SaveChanges();
 
     }
 }

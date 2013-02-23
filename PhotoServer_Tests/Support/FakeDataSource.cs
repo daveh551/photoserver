@@ -10,12 +10,12 @@ namespace PhotoServer_Tests.Support
 {
     public class FakeDataSource : IPhotoDataSource
     {
-        private FakeRepository<PhotoData, Guid> _photoData;
+        private FakeRepository<PhotoData>  _photoData;
         public IRepository<PhotoData, Guid> photoData { get { return _photoData; } }
 
         public FakeDataSource()
         {
-            _photoData = new FakeRepository<PhotoData, Guid>();
+            _photoData = new FakeRepository<PhotoData>();
         }
     }
 

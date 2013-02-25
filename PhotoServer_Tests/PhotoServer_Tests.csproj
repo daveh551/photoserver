@@ -96,10 +96,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\PhotosController_Tests\FakeControllerContext.cs" />
+    <Compile Include="Controllers\PhotosController_Tests\FakeHttpContext.cs" />
+    <Compile Include="Controllers\PhotosController_Tests\GetAction_Tests.cs" />
     <Compile Include="Controllers\PhotosController_Tests\PostAction_Tests.cs" />
     <Compile Include="ObjectMother.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\ValuesControllerTest.cs" />
+    <Compile Include="Support\Bootstrap.cs" />
     <Compile Include="Support\FakeDataSource.cs" />
     <Compile Include="Support\FakeRepository.cs" />
     <Compile Include="Support\ObjectMother.cs" />

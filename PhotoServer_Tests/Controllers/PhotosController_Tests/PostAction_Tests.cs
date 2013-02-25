@@ -1,19 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Web.Helpers;
-using System.Web.Http.Controllers;
-using System.Web.Mvc;
 using NUnit.Framework;
 using PhotoServer.Controllers;
 using PhotoServer.DataAccessLayer;
 using PhotoServer.Domain;
 using PhotoServer_Tests.Support;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Web.Helpers;
 
 namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 {
@@ -22,11 +17,37 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 	{
 		#region SetUp / TearDown
 
+		private PhotosController target;
+		private string pathArgument = @"Test\FinishLine\1\1.jpg";
+		[TestFixtureSetUp]
+		public void InitFixture()
+		{
+				
+		}
 		private IPhotoDataSource fakeDataSource;
 		[SetUp]
 		public void Init()
 		{
+			var fileName = @"..\..\TestFiles\Run For The Next Generation 2011 001.JPG";
 			fakeDataSource =   new FakeDataSource();
+			target = new PhotosController(fakeDataSource);
+			target.ControllerContext = new FakeControllerContext();
+			target.ControllerContext.Request = SetupContent(fileName);
+			target.context = new  FakeHttpContext();
+		}
+		private HttpRequestMessage SetupContent(string fileName)
+		{
+
+			var req = new HttpRequestMessage(HttpMethod.Post, "http://localhost:6471/api/Photos/?path=" + pathArgument);
+			using (var file = new BinaryReader(new FileStream(fileName, FileMode.Open)))
+			{
+				var fileSize = new FileInfo(fileName).Length;
+				var image = file.ReadBytes((int) fileSize);
+				req.Content = new ByteArrayContent(image);
+				req.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+			}
+
+			return req;
 		}
 
 		[TearDown]
@@ -43,8 +64,6 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		{
 			//Arrange
 			HttpStatusCode expected = HttpStatusCode.Forbidden;
-			var target = new PhotosController(fakeDataSource);
-			target.ControllerContext =  new FakeControllerContext();
 			//Act
 			HttpResponseMessage result = target.Post("abc");
 			//Assert
@@ -54,10 +73,8 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		public void Post_WithNewPhoto_ShouldAddPhotosDataItemToDB()
 		{
 			//Arrange
-			string pathargument = @"Photos\Test\1\1.jpg";
-			var target = new PhotosController(fakeDataSource);
 			//Act
-			var result = target.Post(pathargument);
+			var result = target.Post(pathArgument);
 			//Assert
 			Assert.AreEqual(1, fakeDataSource.photoData.FindAll().Count((item) =>true));
 		}
@@ -67,10 +84,8 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		public void Post_WithNewPhoto_ReturnsLocationHeaderWithGuid()
 		{
 			//Arrange
-			string pathargument = @"Photos\Test\FinishLine\1\1.jpg";
-			var target = new PhotosController(fakeDataSource);
 			//Act
-			var result = target.Post(pathargument);
+			var result = target.Post(pathArgument);
 			var hdrs = result.Headers;
 			
 			//Assert
@@ -81,16 +96,14 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 
 		
 		[Test]
-		public async void  Post_WithNewData_ReturnsPhotoDataItemInMessageBody()
+		public  void  Post_WithNewData_ReturnsPhotoDataItemInMessageBody()
 		{
 			//Arrange
-			var pathargument = @"\Photos\Test\FinishLine\1\1.jpg";
-			var target = new PhotosController(fakeDataSource);
 			//Act
-			var result = target.Post(pathargument);
+			var result = target.Post(pathArgument);
 			var dataItem = fakeDataSource.photoData.FindAll().FirstOrDefault();
 			var body = result.Content;
-			var bodyString = await body.ReadAsStringAsync();
+			var bodyString = body.ReadAsStringAsync().Result;
 			var resultData = Json.Decode<PhotoData>(bodyString);
 			//Assert
 			Assert.IsNotNull(dataItem, "returned null dataItem");
@@ -104,24 +117,14 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		{
 			//Arrange
 			ClearDirectory();
-			var fileName = @"..\..\TestFiles\Run For The Next Generation 2011 001.JPG";
-			var file = new BinaryReader(new FileStream(fileName, FileMode.Open));
-			var fileSize = new FileInfo(fileName).Length;
-			var image = file.ReadBytes((int) fileSize);
-			var pathargument = @"\Photos\Testi\FinishLine\1\1.jpg";
-			var target = new PhotosController(fakeDataSource);
-			target.ControllerContext = new FakeControllerContext();
-			var req = new HttpRequestMessage();
-			req.Content = new ByteArrayContent(image);
-			req.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
-			target.ControllerContext.Request = req;
 
 			//Act
-			var result = target.Post(pathargument);
+			var result = target.Post(pathArgument);
 			//Assert
-			var resultPath = @"..\..\..\PhotoServer" + pathargument;
+			var resultPath = Path.Combine( @"..\..\..\PhotoServer\Photos" , pathArgument);
 			Assert.That(File.Exists(resultPath));
 		}
+
 
 		private void ClearDirectory()
 		{
@@ -136,4 +139,6 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 
 		#endregion
 	}
+
+	
 }

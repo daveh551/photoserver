@@ -16,6 +16,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 	    {
 		    Configuration = new HttpConfiguration();
 			
+			
 	    }
 
         

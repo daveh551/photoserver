@@ -17,6 +17,7 @@ namespace PhotoServer.Controllers
     {
         private IPhotoDataSource _db;
 	    private string appHome = string.Empty;
+		public HttpContextBase context { get; set; }
 
         public PhotosController(IPhotoDataSource Db)
         {
@@ -66,9 +67,9 @@ namespace PhotoServer.Controllers
 					bytesRead +=image.Read(imageArray, bytesRead,  imageSz - bytesRead);
 				}
 
-				while (path.Contains("/"))
-					path = path.Replace('/', '\\');
-				path = Path.Combine(appHome, path);
+
+				HttpContextBase localContext = HttpContext.Current == null ? context : new HttpContextWrapper(HttpContext.Current);
+				path =localContext.Server.MapPath(Path.Combine("~/Photos",path));
 				
 				if (!File.Exists(path))
 				{

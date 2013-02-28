@@ -41,11 +41,11 @@ namespace PhotoServer.Controllers
         // POST api/photos
         
         [Authorize(Roles="admin")]
-        public HttpResponseMessage Post(string path)
+        public HttpResponseMessage Post(string race, string station, string card, int? seq)
         {
-            var data = new PhotoData {Path = path};
-            _db.photoData.Add(data);
-            _db.photoData.SaveChanges();
+	        int Sequence = seq ?? GetMaxSeq(race, station, card) + 1;
+	        var data = new PhotoData(race, station, card, Sequence);
+	        var path = data.Path;
 	        var request = ControllerContext.Request;
 			if (request.Content == null || request.Content.Headers == null || request.Content.Headers.ContentType == null)
 			{ return new HttpResponseMessage(HttpStatusCode.BadRequest);}
@@ -80,6 +80,8 @@ namespace PhotoServer.Controllers
 					var newImage = new BinaryWriter(new FileStream(path, FileMode.CreateNew));
 					newImage.Write(imageArray);
 				}
+				_db.photoData.Add(data);
+				_db.photoData.SaveChanges();
 			}
 			else
 			{
@@ -92,7 +94,16 @@ namespace PhotoServer.Controllers
             return response;
         }
 
-        // PUT api/photos/5
+	    private int GetMaxSeq(string race, string station, string card)
+	    {
+			    var list = _db.photoData.FindAll()
+			       .Where(pd => pd.Race == race && pd.Station == station && pd.Card == card)
+			       .Select(pd => pd.Sequence).ToList<int>();
+		    if (list.Count > 0) return list.Max();
+		    return 0;
+	    }
+
+	    // PUT api/photos/5
         public void Put(int id, [FromBody]string value)
         {
         }

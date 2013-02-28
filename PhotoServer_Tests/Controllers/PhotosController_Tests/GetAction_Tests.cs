@@ -30,11 +30,5 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 
 		#endregion
 
-		#region Tests
-
-	
-		}
-
-		#endregion
 	}
 }

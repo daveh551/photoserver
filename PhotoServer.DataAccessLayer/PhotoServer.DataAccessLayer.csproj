@@ -39,8 +39,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractRepository.cs" />
+    <Compile Include="GuidRepository.cs" />
     <Compile Include="IPhotoDataSource.cs" />
     <Compile Include="IRepository.cs" />
+    <Compile Include="PhotoDataRepository.cs" />
+    <Compile Include="PhotoServerDataSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -18,7 +18,11 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		#region SetUp / TearDown
 
 		private PhotosController target;
-		private string pathArgument = @"Test\FinishLine\1\1.jpg";
+		private string pathArgument = @"Test\FinishLine\1\001.jpg";
+		private string raceArgument = "Test";
+		private string stationArgument = "FinishLine";
+		private string cardArgument = "1";
+		private int seqArgument = 1;
 		[TestFixtureSetUp]
 		public void InitFixture()
 		{
@@ -65,7 +69,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			//Arrange
 			HttpStatusCode expected = HttpStatusCode.Forbidden;
 			//Act
-			HttpResponseMessage result = target.Post("abc");
+			HttpResponseMessage result = target.Post("test", "", "", null);
 			//Assert
 			Assert.AreEqual(expected, result.StatusCode, "failure message");
 		}
@@ -74,7 +78,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		{
 			//Arrange
 			//Act
-			var result = target.Post(pathArgument);
+			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
 			//Assert
 			Assert.AreEqual(1, fakeDataSource.photoData.FindAll().Count((item) =>true));
 		}
@@ -85,7 +89,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		{
 			//Arrange
 			//Act
-			var result = target.Post(pathArgument);
+			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
 			var hdrs = result.Headers;
 			
 			//Assert
@@ -100,7 +104,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		{
 			//Arrange
 			//Act
-			var result = target.Post(pathArgument);
+			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
 			var dataItem = fakeDataSource.photoData.FindAll().FirstOrDefault();
 			var body = result.Content;
 			var bodyString = body.ReadAsStringAsync().Result;
@@ -119,7 +123,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			ClearDirectory();
 
 			//Act
-			var result = target.Post(pathArgument);
+			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
 			//Assert
 			var resultPath = Path.Combine( @"..\..\..\PhotoServer\Photos" , pathArgument);
 			Assert.That(File.Exists(resultPath));

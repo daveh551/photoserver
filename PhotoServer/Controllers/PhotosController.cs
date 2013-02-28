@@ -40,7 +40,7 @@ namespace PhotoServer.Controllers
 
         // POST api/photos
         
-        [Authorize(Roles="admin")]
+        
         public HttpResponseMessage Post(string race, string station, string card, int? seq)
         {
 	        int Sequence = seq ?? GetMaxSeq(race, station, card) + 1;

@@ -14,10 +14,9 @@ namespace PhotoServer
 
     public class WebApiApplication : System.Web.HttpApplication
     {
-	    public static WebApiApplication Instance;
         protected void Application_Start()
         {
-	        Instance = this;
+	        
             AreaRegistration.RegisterAllAreas();
 
             WebApiConfig.Register(GlobalConfiguration.Configuration);

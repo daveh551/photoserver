@@ -18,6 +18,9 @@ namespace PhotoServer.Domain
 	    public virtual DateTime? TimeStamp { get; set; }
 	    public virtual int? Hres { get; set; }
 	    public virtual int? Vres { get; set; }
+	    public Guid? BasedOn { get; set; }
+	    public long FileSize { get; set; }
+	    public DateTime? LastAccessed { get; set; }
 
 	    public PhotoData(string race, string station, string card, int seq)
 	    {

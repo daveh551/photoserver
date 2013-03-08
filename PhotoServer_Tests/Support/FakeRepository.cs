@@ -28,17 +28,17 @@ namespace PhotoServer_Tests.Support
             throw new NotImplementedException();
         }
 
-        public IEnumerable<T> FindAll()
+        public IQueryable<T> FindAll()
         {
-            return  data;
+            return   data.AsQueryable();
         }
 
         public T FindById(Guid id)
         {
-            throw new NotImplementedException();
+	        return data.FirstOrDefault(r => r.Id == id);
         }
 
-        public IEnumerable<T> Find(Func<T, bool> predicate)
+        public IQueryable<T> Find(Func<T, bool> predicate)
         {
             throw new NotImplementedException();
         }

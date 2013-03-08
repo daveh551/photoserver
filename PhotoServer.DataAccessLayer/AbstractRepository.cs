@@ -21,7 +21,7 @@ namespace PhotoServer.DataAccessLayer
 			throw new NotImplementedException();
 		}
 
-		public  virtual IEnumerable<T> FindAll()
+		public  virtual IQueryable<T> FindAll()
 		{
 			throw new NotImplementedException();
 		}
@@ -31,7 +31,7 @@ namespace PhotoServer.DataAccessLayer
 			throw new NotImplementedException();
 		}
 
-		public virtual IEnumerable<T> Find(Func<T, bool> predicate)
+		public virtual IQueryable<T> Find(Func<T, bool> predicate)
 		{
 			throw new NotImplementedException();
 		}

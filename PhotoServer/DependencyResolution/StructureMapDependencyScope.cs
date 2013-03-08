@@ -79,7 +79,7 @@ namespace PhotoServer.DependencyResolution
         /// <returns>
         /// The System.Object.
         /// </returns>
-        public object GetService(Type serviceType)
+        public override object GetService(Type serviceType)
         {
             if (serviceType == null)
             {

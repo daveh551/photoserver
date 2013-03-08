@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
 using System.Web.Security;
+using AutoMapper;
+using ExifLib;
 using PhotoServer.DataAccessLayer;
 using PhotoServer.Domain;
 
@@ -21,21 +25,39 @@ namespace PhotoServer.Controllers
 
         public PhotosController(IPhotoDataSource Db)
         {
-	        appHome = Path.GetDirectoryName(this.GetType().Assembly.Location);
-	        appHome = Path.GetDirectoryName(appHome);
-
             _db = Db;
         }
         // GET api/photos
-        public IEnumerable<string> Get()
+        public IEnumerable<Models.PhotoData> Get()
         {
-            return new string[] { "value1", "value2" };
+	        var data = _db.photoData.FindAll().Select( pd => Mapper.Map<Domain.PhotoData, Models.PhotoData>(pd)).ToList();
+	        return data;
         }
 
         // GET api/photos/5
-        public string Get(int id)
+        public HttpResponseMessage Get(Guid id)
         {
-            return "value";
+            var returnMsg = new HttpResponseMessage();
+	        var record = _db.photoData.FindById(id);
+			if (record == null)
+			{
+				returnMsg.StatusCode = HttpStatusCode.NotFound;
+			}
+
+			else
+			{
+				var path = GetLocalPath(record.Path);
+				if (!File.Exists(path))
+					returnMsg.StatusCode = HttpStatusCode.NotFound;
+				else
+				{
+					var fileStream = new FileStream(path, FileMode.Open);
+					returnMsg.Content = new StreamContent(fileStream);
+					returnMsg.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+					returnMsg.Content.Headers.ContentLength = fileStream.Length;
+				}
+			}
+			return returnMsg;
         }
 
         // POST api/photos
@@ -53,24 +75,56 @@ namespace PhotoServer.Controllers
 			if (contentType == "image/jpeg" || contentType == "image/jpg")
 			{
 				var imageSize = request.Content.Headers.ContentLength;
-				var image = request.Content.ReadAsStreamAsync().Result;
 				byte[] imageArray;
-				if (!imageSize.HasValue)
+				using (var image = request.Content.ReadAsStreamAsync().Result)
 				{
-					imageSize = (int) image.Length;
-				}
-				var imageSz = (int) imageSize.Value;
-				imageArray = new byte[imageSz];
-				int bytesRead = 0;
-				while (bytesRead < imageSz)
-				{
-					bytesRead +=image.Read(imageArray, bytesRead,  imageSz - bytesRead);
+					if (!imageSize.HasValue)
+					{
+						imageSize = (int) image.Length;
+					}
+					var imageSz = (int) imageSize.Value;
+					imageArray = new byte[imageSz];
+					int bytesRead = 0;
+					while (bytesRead < imageSz)
+					{
+						bytesRead += image.Read(imageArray, bytesRead, imageSz - bytesRead);
+					}
+					image.Seek(0, SeekOrigin.Begin);
+					using (var reader = new ExifLib.ExifReader(image))
+					{
+						String timeString;
+						if (reader.GetTagValue(ExifTags.DateTimeOriginal, out timeString))
+						{
+							DateTime timeStamp;
+							if (DateTime.TryParseExact(timeString,"yyyy:MM:dd hh:mm:ss", 
+								CultureInfo.InvariantCulture, 
+								DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AssumeLocal,
+								out timeStamp))
+								data.TimeStamp = timeStamp;
+						}
+						UInt16 hres, vres;
+						if (reader.GetTagValue(ExifTags.PixelXDimension, out hres))
+							data.Hres = (int) hres;
+						if (reader.GetTagValue(ExifTags.PixelYDimension, out vres))
+							data.Vres = (int) vres;
+						if (reader.GetTagValue(ExifTags.SubsecTimeOriginal, out timeString))
+						{
+							int msec;
+							if (int.TryParse(timeString, out msec))
+							{
+								data.TimeStamp += new TimeSpan(0, 0, 0, 0, msec);
+							}
+						}
+
+					}
+
+					
+					image.Close();
 				}
 
 
-				HttpContextBase localContext = HttpContext.Current == null ? context : new HttpContextWrapper(HttpContext.Current);
-				path =localContext.Server.MapPath(Path.Combine("~/Photos",path));
-				
+				path = GetLocalPath(path);
+
 				if (!File.Exists(path))
 				{
 					var dir = Path.GetDirectoryName(path);
@@ -90,9 +144,16 @@ namespace PhotoServer.Controllers
             var response = new HttpResponseMessage(HttpStatusCode.Created);
 	        var uri =new Uri("/api/Photos/" + data.Id.ToString(), UriKind.Relative);
 	        response.Headers.Location = uri;
-	        response.Content = new ObjectContent<PhotoData>(data, new JsonMediaTypeFormatter());
+	        var modelData = Mapper.Map<PhotoServer.Domain.PhotoData, Models.PhotoData>(data);
+	        response.Content = new ObjectContent<Models.PhotoData>(modelData, new JsonMediaTypeFormatter());
             return response;
         }
+
+	    private string GetLocalPath(string virtualPath)
+	    {
+		    HttpContextBase localContext = HttpContext.Current == null ? context : new HttpContextWrapper(HttpContext.Current);
+		    return localContext.Server.MapPath(Path.Combine("~/Photos", virtualPath));
+	    }
 
 	    private int GetMaxSeq(string race, string station, string card)
 	    {

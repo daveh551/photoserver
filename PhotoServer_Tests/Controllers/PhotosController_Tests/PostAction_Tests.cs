@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using PhotoServer.Controllers;
 using PhotoServer.DataAccessLayer;
@@ -26,7 +27,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		[TestFixtureSetUp]
 		public void InitFixture()
 		{
-				
+			PhotoServer.App_Start.InitializeMapper.MapClasses();	
 		}
 		private IPhotoDataSource fakeDataSource;
 		[SetUp]
@@ -108,11 +109,12 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			var dataItem = fakeDataSource.photoData.FindAll().FirstOrDefault();
 			var body = result.Content;
 			var bodyString = body.ReadAsStringAsync().Result;
-			var resultData = Json.Decode<PhotoData>(bodyString);
+			var resultData = Json.Decode<PhotoServer.Models.PhotoData>(bodyString);
 			//Assert
 			Assert.IsNotNull(dataItem, "returned null dataItem");
 			Assert.AreEqual(dataItem.Id, resultData.Id, "Item Id in HttpContent not equal to data Item Id");
-			Assert.AreEqual(dataItem.Path, resultData.Path, "Item Path in HttpContent not equal to data Item Path");
+			Assert.AreEqual(raceArgument, resultData.Race, "Race");
+			Assert.AreEqual(stationArgument, resultData.Station, "Station");
 		}
 
 		
@@ -120,7 +122,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		public void Post_WithAttachedPhoto_ResultsInPhotoInDirectory()
 		{
 			//Arrange
-			ClearDirectory();
+			Support.ObjectMother.ClearDirectory();
 
 			//Act
 			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
@@ -129,17 +131,26 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			Assert.That(File.Exists(resultPath));
 		}
 
-
-		private void ClearDirectory()
+		
+		[Test]
+		public void Post_WithAttachedPhoto_ReturnsDataWithTimeAndResolution()
 		{
-			var photoPath = @"..\..\..\PhotoServer\Photos\Test";
-			var directoryInfo = new DirectoryInfo(photoPath);
-			if (directoryInfo.Exists)
-			{
-				directoryInfo.Delete(true);
-			}
+			//Arrange
+			
+			DateTime expectedTimeStamp = new DateTime(2011, 10, 22, 8, 28, 59, 60);
+			int expectedHres = 3008;
+			int expectedVres = 2000;
+			//Act
+			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
+			var bodyString = result.Content.ReadAsStringAsync().Result;
+			var resultData = Json.Decode<PhotoData>(bodyString);
 
+			//Assert
+			Assert.AreEqual(expectedTimeStamp, resultData.TimeStamp, "TimeStamp");
+			Assert.AreEqual(expectedHres, resultData.Hres, "Hres");
+			Assert.AreEqual(expectedVres, resultData.Vres, "Vres");
 		}
+
 
 		#endregion
 	}

@@ -9,9 +9,9 @@ namespace PhotoServer.DataAccessLayer
     {
         void Add(T item);
         void Remove(T item);
-        IEnumerable<T> FindAll();
+        IQueryable<T> FindAll();
         T FindById(TKey id);
-        IEnumerable<T> Find(Func<T, bool> predicate);
+        IQueryable<T> Find(Func<T, bool> predicate);
         void SaveChanges();
 
     }

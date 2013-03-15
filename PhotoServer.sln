@@ -5,9 +5,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoServer", "PhotoServer\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoServer_Tests", "PhotoServer_Tests\PhotoServer_Tests.csproj", "{A2A5E33B-791C-4CE0-8040-9586505032B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoServer.Domain", "PhotoServer.Domain\PhotoServer.Domain.csproj", "{F8BE44F9-5540-4D9D-84F8-A2614CD30987}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoServer.DataAccessLayer", "..\RacePhotosData\PhotoServer.DataAccessLayer\PhotoServer.DataAccessLayer.csproj", "{A3AD1891-A743-4912-878B-8D31CE2AAD2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoServer.DataAccessLayer", "PhotoServer.DataAccessLayer\PhotoServer.DataAccessLayer.csproj", "{A3AD1891-A743-4912-878B-8D31CE2AAD2E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoServer.Domain", "..\RacePhotosData\PhotoServer.Domain\PhotoServer.Domain.csproj", "{F8BE44F9-5540-4D9D-84F8-A2614CD30987}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,14 +23,14 @@ Global
 		{A2A5E33B-791C-4CE0-8040-9586505032B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2A5E33B-791C-4CE0-8040-9586505032B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2A5E33B-791C-4CE0-8040-9586505032B0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F8BE44F9-5540-4D9D-84F8-A2614CD30987}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F8BE44F9-5540-4D9D-84F8-A2614CD30987}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F8BE44F9-5540-4D9D-84F8-A2614CD30987}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F8BE44F9-5540-4D9D-84F8-A2614CD30987}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A3AD1891-A743-4912-878B-8D31CE2AAD2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A3AD1891-A743-4912-878B-8D31CE2AAD2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3AD1891-A743-4912-878B-8D31CE2AAD2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3AD1891-A743-4912-878B-8D31CE2AAD2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8BE44F9-5540-4D9D-84F8-A2614CD30987}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8BE44F9-5540-4D9D-84F8-A2614CD30987}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8BE44F9-5540-4D9D-84F8-A2614CD30987}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8BE44F9-5540-4D9D-84F8-A2614CD30987}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

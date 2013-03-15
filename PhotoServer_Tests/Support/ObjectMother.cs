@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,9 +11,10 @@ namespace PhotoServer_Tests.Support
 {
     public static class ObjectMother
     {
+	    private static string photoPath;
 		public static void ClearDirectory()
 		{
-			var photoPath = @"..\..\..\PhotoServer\Photos\Test";
+			SetPhotoPath();
 			var directoryInfo = new DirectoryInfo(photoPath);
 			if (directoryInfo.Exists)
 			{
@@ -21,7 +23,16 @@ namespace PhotoServer_Tests.Support
 
 		}
 
-		private static PhotoServer.Domain.PhotoData[] testData =
+	    private static void SetPhotoPath()
+	    {
+		    if (string.IsNullOrWhiteSpace(photoPath))
+		    {
+			    photoPath = ConfigurationManager.AppSettings["PhotosPhysicalDirectory"];
+			    photoPath = Path.Combine(photoPath, "Test");
+		    }
+	    }
+
+	    private static PhotoServer.Domain.PhotoData[] testData =
 
 	    new PhotoServer.Domain.PhotoData []
 	    {
@@ -79,7 +90,15 @@ namespace PhotoServer_Tests.Support
 
 	    public static void CopyTestFiles()
 	    {
-		    throw new NotImplementedException();
+			SetPhotoPath();
+		    var sourcePhotos = new DirectoryInfo(@"..\..\TestFiles").EnumerateFiles().ToList();
+		    foreach (var photoData in testData)
+		    {
+			    var destFile = photoData.Path;
+			    var fileName = Path.GetFileName(destFile);
+			    var sourceFile = sourcePhotos.Where(p => p.Name.EndsWith(fileName)).Select(f => f.FullName).Single();
+				File.Copy(sourceFile, Path.Combine(photoPath, destFile));
+		    }
 	    }
     }
 }

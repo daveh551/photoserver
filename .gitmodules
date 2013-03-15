@@ -1,0 +1,3 @@
+[submodule "RacePhotosData"]
+	path = RacePhotosData
+	url = ../RacePhotosData/.git

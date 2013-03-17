@@ -134,13 +134,13 @@
       <Project>{f8be44f9-5540-4d9d-84f8-a2614cd30987}</Project>
       <Name>PhotoServer.Domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\RacePhotosTestSupport\RacePhotosTestSupport.csproj">
+      <Project>{5056e31e-12c6-440c-8c50-e7db2ccd060c}</Project>
+      <Name>RacePhotosTestSupport</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PhotoServer\PhotoServer.csproj">
       <Project>{CE764A41-3E9D-425A-96E8-3BC6E76B2CA3}</Project>
       <Name>PhotoServer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RacePhotosTestSupport\RacePhotosTestSupport.csproj">
-      <Project>{5056e31e-12c6-440c-8c50-e7db2ccd060c}</Project>
-      <Name>RacePhotosTestSupport</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

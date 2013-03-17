@@ -3,7 +3,7 @@ using NUnit.Framework;
 using PhotoServer.Controllers;
 using PhotoServer.DataAccessLayer;
 using PhotoServer.Domain;
-using PhotoServer_Tests.Support;
+using RacePhotosTestSupport;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -124,7 +124,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		public void Post_WithAttachedPhoto_ResultsInPhotoInDirectory()
 		{
 			//Arrange
-			Support.ObjectMother.ClearDirectory();
+			ObjectMother.ClearDirectory();
 
 			//Act
 			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);

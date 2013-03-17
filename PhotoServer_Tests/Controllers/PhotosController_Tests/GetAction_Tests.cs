@@ -7,7 +7,7 @@ using System.Text;
 using System.Web.Mvc;
 using NUnit.Framework;
 using PhotoServer.Controllers;
-using PhotoServer_Tests.Support;
+using RacePhotosTestSupport;
 
 namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 {

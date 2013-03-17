@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Http;
 using System.Web.Security;
 using AutoMapper;
@@ -22,16 +24,20 @@ namespace PhotoServer.Controllers
         private IPhotoDataSource _db;
 	    private string appHome = string.Empty;
 		public HttpContextBase context { get; set; }
+	    private string physicalPhotosPath;
 
         public PhotosController(IPhotoDataSource Db)
         {
             _db = Db;
+	        physicalPhotosPath = WebConfigurationManager.AppSettings["PhotosPhysicalDirectory"];
+			if (string.IsNullOrWhiteSpace(physicalPhotosPath))
+				throw new ConfigurationErrorsException("No configuration for PhotosPhysicalDirectory.  Set path where photo images are to be stored.");
         }
         // GET api/photos
         public IEnumerable<Models.PhotoData> Get()
         {
-	        var data = _db.photoData.FindAll().Select( pd => Mapper.Map<Domain.PhotoData, Models.PhotoData>(pd)).ToList();
-	        return data;
+	        var data = _db.photoData.FindAll().ToList();
+			return data.Select( Mapper.Map<Domain.Photo, Models.PhotoData>).ToList();
         }
 
         // GET api/photos/5
@@ -51,10 +57,12 @@ namespace PhotoServer.Controllers
 					returnMsg.StatusCode = HttpStatusCode.NotFound;
 				else
 				{
-					var fileStream = new FileStream(path, FileMode.Open);
-					returnMsg.Content = new StreamContent(fileStream);
-					returnMsg.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
-					returnMsg.Content.Headers.ContentLength = fileStream.Length;
+					using (var fileStream = new FileStream(path, FileMode.Open))
+					{
+						returnMsg.Content = new StreamContent(fileStream);
+						returnMsg.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+						returnMsg.Content.Headers.ContentLength = fileStream.Length;
+					}
 				}
 			}
 			return returnMsg;
@@ -66,7 +74,7 @@ namespace PhotoServer.Controllers
         public HttpResponseMessage Post(string race, string station, string card, int? seq)
         {
 	        int Sequence = seq ?? GetMaxSeq(race, station, card) + 1;
-	        var data = new PhotoData(race, station, card, Sequence);
+	        var data = new Photo(race, station, card, Sequence);
 	        var path = data.Path;
 	        var request = ControllerContext.Request;
 			if (request.Content == null || request.Content.Headers == null || request.Content.Headers.ContentType == null)
@@ -135,7 +143,7 @@ namespace PhotoServer.Controllers
 					newImage.Write(imageArray);
 				}
 				_db.photoData.Add(data);
-				_db.photoData.SaveChanges();
+				_db.SaveChanges();
 			}
 			else
 			{
@@ -144,15 +152,14 @@ namespace PhotoServer.Controllers
             var response = new HttpResponseMessage(HttpStatusCode.Created);
 	        var uri =new Uri("/api/Photos/" + data.Id.ToString(), UriKind.Relative);
 	        response.Headers.Location = uri;
-	        var modelData = Mapper.Map<PhotoServer.Domain.PhotoData, Models.PhotoData>(data);
+	        var modelData = Mapper.Map<PhotoServer.Domain.Photo, Models.PhotoData>(data);
 	        response.Content = new ObjectContent<Models.PhotoData>(modelData, new JsonMediaTypeFormatter());
             return response;
         }
 
 	    private string GetLocalPath(string virtualPath)
 	    {
-		    HttpContextBase localContext = HttpContext.Current == null ? context : new HttpContextWrapper(HttpContext.Current);
-		    return localContext.Server.MapPath(Path.Combine("~/Photos", virtualPath));
+		    return Path.Combine(physicalPhotosPath, virtualPath);
 	    }
 
 	    private int GetMaxSeq(string race, string station, string card)

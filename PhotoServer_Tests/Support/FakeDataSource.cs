@@ -10,13 +10,18 @@ namespace PhotoServer_Tests.Support
 {
     public class FakeDataSource : IPhotoDataSource
     {
-        private FakeRepository<PhotoData>  _photoData;
-        public IRepository<PhotoData, Guid> photoData { get { return _photoData; } }
+        private FakeRepository<Photo>  _photoData;
+        public IRepository<Photo, Guid> photoData { get { return _photoData; } }
 
         public FakeDataSource()
         {
-            _photoData = new FakeRepository<PhotoData>();
+            _photoData = new FakeRepository<Photo>();
         }
+
+	    public int SaveChanges()
+	    {
+		    return _photoData.SaveChanges();
+	    }
     }
 
    

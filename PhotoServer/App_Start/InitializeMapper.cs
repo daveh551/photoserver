@@ -10,7 +10,7 @@ namespace PhotoServer.App_Start
 	{
 		public static void MapClasses()
 		{
-			Mapper.CreateMap<PhotoServer.Domain.PhotoData, PhotoServer.Models.PhotoData>();
+			Mapper.CreateMap<PhotoServer.Domain.Photo, PhotoServer.Models.PhotoData>();
 			Mapper.AssertConfigurationIsValid();
 		}
 	}

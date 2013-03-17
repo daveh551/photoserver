@@ -31,7 +31,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			var db = new FakeDataSource();
 			var testRecords = ObjectMother.ReturnPhotoDataRecord(3);
 			testRecords.ForEach( r => db.photoData.Add(r));
-			db.photoData.SaveChanges();
+			db.SaveChanges();
 			target = new PhotosController(db);
 			target.context = new FakeHttpContext();
 

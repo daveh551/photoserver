@@ -24,10 +24,12 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		private string stationArgument = "FinishLine";
 		private string cardArgument = "1";
 		private int seqArgument = 1;
+
 		[TestFixtureSetUp]
 		public void InitFixture()
 		{
 			PhotoServer.App_Start.InitializeMapper.MapClasses();	
+			ObjectMother.SetPhotoPath();
 		}
 		private IPhotoDataSource fakeDataSource;
 		[SetUp]
@@ -127,7 +129,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			//Act
 			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
 			//Assert
-			var resultPath = Path.Combine( @"..\..\..\PhotoServer\Photos" , pathArgument);
+			var resultPath = Path.Combine( ObjectMother.photoPath , pathArgument);
 			Assert.That(File.Exists(resultPath));
 		}
 
@@ -143,7 +145,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			//Act
 			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
 			var bodyString = result.Content.ReadAsStringAsync().Result;
-			var resultData = Json.Decode<PhotoData>(bodyString);
+			var resultData = Json.Decode<Photo>(bodyString);
 
 			//Assert
 			Assert.AreEqual(expectedTimeStamp, resultData.TimeStamp, "TimeStamp");

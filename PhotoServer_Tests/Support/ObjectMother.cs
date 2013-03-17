@@ -11,10 +11,11 @@ namespace PhotoServer_Tests.Support
 {
     public static class ObjectMother
     {
-	    private static string photoPath;
+	    public static string photoPath;
 		public static void ClearDirectory()
 		{
 			SetPhotoPath();
+			var directoryPath = Path.Combine(photoPath, "Test");
 			var directoryInfo = new DirectoryInfo(photoPath);
 			if (directoryInfo.Exists)
 			{
@@ -23,20 +24,19 @@ namespace PhotoServer_Tests.Support
 
 		}
 
-	    private static void SetPhotoPath()
+	    public static void SetPhotoPath()
 	    {
 		    if (string.IsNullOrWhiteSpace(photoPath))
 		    {
 			    photoPath = ConfigurationManager.AppSettings["PhotosPhysicalDirectory"];
-			    photoPath = Path.Combine(photoPath, "Test");
 		    }
 	    }
 
-	    private static PhotoServer.Domain.PhotoData[] testData =
+	    private static PhotoServer.Domain.Photo[] testData =
 
-	    new PhotoServer.Domain.PhotoData []
+	    new PhotoServer.Domain.Photo []
 	    {
-		    new PhotoData
+		    new Photo
 			    {
 				    Id = new Guid("E0CAF539-5C32-432B-AAC4-B01CD4EABB3A"),
 				    Race = "Test",
@@ -48,7 +48,7 @@ namespace PhotoServer_Tests.Support
 				    Vres = 2000,
 				    TimeStamp = new DateTime(2011, 10, 22, 8, 48, 59, 60)
 			    },
-		    new PhotoData
+		    new Photo
 			    {
 				    Id = new Guid("24249DF5-C9FF-4B17-A259-514586F07C6B"),
 				    Race = "Test",
@@ -60,7 +60,7 @@ namespace PhotoServer_Tests.Support
 				    Vres = 2000,
 				    TimeStamp = new DateTime(2011, 10, 22, 8, 29, 0)
 			    },
-		    new PhotoData
+		    new Photo
 			    {
 				    Id = new Guid("E5034D6B-3B26-4F03-8F9E-0EA1F5BE55C7"),
 				    Race = "Test",
@@ -75,9 +75,9 @@ namespace PhotoServer_Tests.Support
 	    };
 
 
-	    public static List<PhotoServer.Domain.PhotoData> ReturnPhotoDataRecord(int count)
+	    public static List<PhotoServer.Domain.Photo> ReturnPhotoDataRecord(int count)
 	    {
-		    var returnList = new List<PhotoData>();
+		    var returnList = new List<Photo>();
 		    if (count <= 3)
 				for (int ix = 0; ix < count; ix++)
 				{
@@ -97,7 +97,9 @@ namespace PhotoServer_Tests.Support
 			    var destFile = photoData.Path;
 			    var fileName = Path.GetFileName(destFile);
 			    var sourceFile = sourcePhotos.Where(p => p.Name.EndsWith(fileName)).Select(f => f.FullName).Single();
-				File.Copy(sourceFile, Path.Combine(photoPath, destFile));
+			    var destPath = Path.Combine(photoPath, destFile);
+				Directory.CreateDirectory(Path.GetDirectoryName(destPath));
+				File.Copy(sourceFile, destPath);
 		    }
 	    }
     }

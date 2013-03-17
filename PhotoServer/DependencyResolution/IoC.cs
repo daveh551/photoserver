@@ -30,8 +30,9 @@ namespace PhotoServer.DependencyResolution {
                                         scan.TheCallingAssembly();
                                         scan.WithDefaultConventions();
                                     });
-                           x.For<IPhotoDataSource>().Use<PhotoServerDataSource>();
-	                        x.For<IRepository<PhotoData, Guid>>().Use<PhotoDataRepository>();
+	                        x.For<IPhotoDataSource>()
+	                         .Use(() => new EFPhotoServerDataSource("DefaultConnection"));
+
                         });
             return ObjectFactory.Container;
         }

@@ -43,16 +43,20 @@ namespace PhotoServer_Tests.Support
             throw new NotImplementedException();
         }
 
-        public void SaveChanges()
+        public int  SaveChanges()
         {
+
+	        int numberOfChanges = 0;
             foreach (var item in addedData)
             {
                 if (item.Id == default(Guid))
                 {
                     item.Id = Guid.NewGuid();
+	                numberOfChanges++;
                 }
             }
             addedData.Clear();
+	        return numberOfChanges;
         }
     }
 }

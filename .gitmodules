@@ -1,6 +1,0 @@
-[submodule "RacePhotosData"]
-	path = RacePhotosData
-	url = ../RacePhotosData/.git
-[submodule "RacePhotosTestSupport"]
-	path = RacePhotosTestSupport
-	url = ../RacePhotosTestSupport/.git

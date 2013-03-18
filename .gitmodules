@@ -1,0 +1,6 @@
+[submodule "RacePhotosData"]
+	path = RacePhotosData
+	url = https://github.com/daveh551/RacePhotosData.git
+[submodule "RacePhotosTestSupport"]
+	path = RacePhotosTestSupport
+	url = https://github.com/daveh551/RacePhotosTestSupport.git

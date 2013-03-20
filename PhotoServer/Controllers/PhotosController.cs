@@ -13,6 +13,7 @@ using System.Web.Configuration;
 using System.Web.Http;
 using System.Web.Security;
 using AutoMapper;
+using Elmah;
 using ExifLib;
 using PhotoServer.DataAccessLayer;
 using PhotoServer.Domain;
@@ -32,6 +33,7 @@ namespace PhotoServer.Controllers
 	        physicalPhotosPath = WebConfigurationManager.AppSettings["PhotosPhysicalDirectory"];
 			if (string.IsNullOrWhiteSpace(physicalPhotosPath))
 				throw new ConfigurationErrorsException("No configuration for PhotosPhysicalDirectory.  Set path where photo images are to be stored.");
+			throw new System.ApplicationException("Just testing");
         }
         // GET api/photos
         public IEnumerable<Models.PhotoData> Get()

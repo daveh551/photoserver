@@ -165,23 +165,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\PhotoServer.DataAccessLayer.EFPhotoServerDataSource.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="App_Data\PhotoServer.DataAccessLayer.EFPhotoServerDataSource.mdf" />
     <Content Include="App_Data\PhotoServer.DataAccessLayer.EFPhotoServerDataSource_log.ldf">
       <DependentUpon>PhotoServer.DataAccessLayer.EFPhotoServerDataSource.mdf</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="App_Data\PhotoServer.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="App_Data\PhotoServer.mdf" />
     <Content Include="App_Data\PhotoServer_log.ldf">
       <DependentUpon>PhotoServer.mdf</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <None Include="Properties\PublishProfiles\photoserver - FTP %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\photoserver - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\photoserver - Web Deploy %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\photoserver - Web Deploy.pubxml" />
     <None Include="_bin_deployableAssemblies\x86\sqlcese40.dll" />
     <None Include="_bin_deployableAssemblies\x86\sqlceqp40.dll" />

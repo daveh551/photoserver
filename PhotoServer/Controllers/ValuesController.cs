@@ -4,11 +4,18 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using PhotoServer.DataAccessLayer;
 
 namespace PhotoServer.Controllers
 {
     public class ValuesController : ApiController
     {
+		private IPhotoDataSource _db;
+
+	    public ValuesController(IPhotoDataSource Db)
+	    {
+		    _db = Db;
+	    }
         // GET api/values
         public IEnumerable<string> Get()
         {

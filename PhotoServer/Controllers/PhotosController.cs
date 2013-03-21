@@ -33,7 +33,6 @@ namespace PhotoServer.Controllers
 	        physicalPhotosPath = WebConfigurationManager.AppSettings["PhotosPhysicalDirectory"];
 			if (string.IsNullOrWhiteSpace(physicalPhotosPath))
 				throw new ConfigurationErrorsException("No configuration for PhotosPhysicalDirectory.  Set path where photo images are to be stored.");
-			throw new System.ApplicationException("Just testing");
         }
         // GET api/photos
         public IEnumerable<Models.PhotoData> Get()

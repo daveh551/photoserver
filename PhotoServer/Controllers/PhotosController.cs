@@ -17,6 +17,7 @@ using Elmah;
 using ExifLib;
 using PhotoServer.DataAccessLayer;
 using PhotoServer.Domain;
+using PhotoServer.Models;
 
 namespace PhotoServer.Controllers
 {
@@ -30,15 +31,24 @@ namespace PhotoServer.Controllers
         public PhotosController(IPhotoDataSource Db)
         {
             _db = Db;
-	        physicalPhotosPath = WebConfigurationManager.AppSettings["PhotosPhysicalDirectory"];
+			physicalPhotosPath = WebConfigurationManager.AppSettings["PhotosPhysicalDirectory"];
 			if (string.IsNullOrWhiteSpace(physicalPhotosPath))
 				throw new ConfigurationErrorsException("No configuration for PhotosPhysicalDirectory.  Set path where photo images are to be stored.");
         }
         // GET api/photos
         public IEnumerable<Models.PhotoData> Get()
         {
-	        var data = _db.photoData.FindAll().ToList();
-			return data.Select( Mapper.Map<Domain.Photo, Models.PhotoData>).ToList();
+	        try
+	        {
+				var data = _db.photoData.FindAll().ToList();
+				return data.Select( Mapper.Map<Domain.Photo, Models.PhotoData>).ToList();
+	        }
+	        catch (Exception ex)
+	        {
+		        throw;
+
+	        }
+			
         }
 
         // GET api/photos/5

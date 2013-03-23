@@ -107,10 +107,12 @@ stylecop.*
 ~$*
 *.dbmdl
 # SQL Ce/LocalDb/SQLExpress data files
-#*.mdf
-#*.ldf
-Generated_Code #added for RIA/Silverlight projects
+*.mdf
+*.ldf
+#Generated_Code #added for RIA/Silverlight projects
 
+#Don't include this file in source control
+PhotoServer/connections.config
 # Backup & report files from converting an old project file to a newer
 # Visual Studio version. Backup files are not needed, because we have git ;-)
 _UpgradeReport_Files/

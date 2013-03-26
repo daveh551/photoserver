@@ -36,19 +36,12 @@ namespace PhotoServer.Controllers
 				throw new ConfigurationErrorsException("No configuration for PhotosPhysicalDirectory.  Set path where photo images are to be stored.");
         }
         // GET api/photos
+		[Authorize(Roles = "Administrator")]
         public IEnumerable<Models.PhotoData> Get()
         {
-	        try
-	        {
+	
 				var data = _db.photoData.FindAll().ToList();
 				return data.Select( Mapper.Map<Domain.Photo, Models.PhotoData>).ToList();
-	        }
-	        catch (Exception ex)
-	        {
-		        throw;
-
-	        }
-			
         }
 
         // GET api/photos/5
@@ -81,7 +74,7 @@ namespace PhotoServer.Controllers
 
         // POST api/photos
         
-        
+        [Authorize(Roles="Administrator")]
         public HttpResponseMessage Post(string race, string station, string card, int? seq)
         {
 	        int Sequence = seq ?? GetMaxSeq(race, station, card) + 1;

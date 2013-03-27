@@ -83,7 +83,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			//Act
 			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
 			//Assert
-			Assert.AreEqual(1, fakeDataSource.photoData.FindAll().Count((item) =>true));
+			Assert.AreEqual(1, fakeDataSource.Photos.FindAll().Count((item) =>true));
 		}
 
 		
@@ -108,7 +108,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			//Arrange
 			//Act
 			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
-			var dataItem = fakeDataSource.photoData.FindAll().FirstOrDefault();
+			var dataItem = fakeDataSource.Photos.FindAll().FirstOrDefault();
 			var body = result.Content;
 			var bodyString = body.ReadAsStringAsync().Result;
 			var resultData = Json.Decode<PhotoServer.Models.PhotoData>(bodyString);

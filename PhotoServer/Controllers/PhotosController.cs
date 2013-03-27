@@ -40,7 +40,7 @@ namespace PhotoServer.Controllers
         public IEnumerable<Models.PhotoData> Get()
         {
 	
-				var data = _db.photoData.FindAll().ToList();
+				var data = _db.Photos.FindAll().ToList();
 				return data.Select( Mapper.Map<Domain.Photo, Models.PhotoData>).ToList();
         }
 
@@ -48,7 +48,7 @@ namespace PhotoServer.Controllers
         public HttpResponseMessage Get(Guid id)
         {
             var returnMsg = new HttpResponseMessage();
-	        var record = _db.photoData.FindById(id);
+	        var record = _db.Photos.FindById(id);
 			if (record == null)
 			{
 				returnMsg.StatusCode = HttpStatusCode.NotFound;
@@ -75,11 +75,12 @@ namespace PhotoServer.Controllers
         // POST api/photos
         
         [Authorize(Roles="Administrator")]
-        public HttpResponseMessage Post(string race, string station, string card, int? seq)
+        public HttpResponseMessage Post(int race, string station, string card, int? seq)
         {
 	        int Sequence = seq ?? GetMaxSeq(race, station, card) + 1;
 	        var data = new Photo(race, station, card, Sequence);
-	        var path = data.Path;
+	        data.Race = _db.Races.FindById(race);
+	        var path = data.SetPath();
 	        var request = ControllerContext.Request;
 			if (request.Content == null || request.Content.Headers == null || request.Content.Headers.ContentType == null)
 			{ return new HttpResponseMessage(HttpStatusCode.BadRequest);}
@@ -146,7 +147,7 @@ namespace PhotoServer.Controllers
 					var newImage = new BinaryWriter(new FileStream(path, FileMode.CreateNew));
 					newImage.Write(imageArray);
 				}
-				_db.photoData.Add(data);
+				_db.Photos.Add(data);
 				_db.SaveChanges();
 			}
 			else
@@ -166,10 +167,10 @@ namespace PhotoServer.Controllers
 		    return Path.Combine(physicalPhotosPath, virtualPath);
 	    }
 
-	    private int GetMaxSeq(string race, string station, string card)
+	    private int GetMaxSeq(int race, string station, string card)
 	    {
-			    var list = _db.photoData.FindAll()
-			       .Where(pd => pd.Race == race && pd.Station == station && pd.Card == card)
+			    var list = _db.Photos.FindAll()
+			       .Where(pd => pd.RaceId == race && pd.Station == station && pd.Card == card)
 			       .Select(pd => pd.Sequence).ToList<int>();
 		    if (list.Count > 0) return list.Max();
 		    return 0;

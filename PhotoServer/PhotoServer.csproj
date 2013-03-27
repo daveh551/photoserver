@@ -163,9 +163,7 @@
   <ItemGroup>
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="connections.config">
-      <SubType>Designer</SubType>
-    </Content>
+    <Content Include="connectionStrings.config" />
     <None Include="Properties\PublishProfiles\photoserver - FTP %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\photoserver - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\photoserver - Web Deploy %282%29.pubxml" />
@@ -241,7 +239,7 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerPort>14478</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:6471/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

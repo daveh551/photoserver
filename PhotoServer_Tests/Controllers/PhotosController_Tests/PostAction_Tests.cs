@@ -19,8 +19,10 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		#region SetUp / TearDown
 
 		private PhotosController target;
-		private string pathArgument = @"Test\FinishLine\1\001.jpg";
-		private string raceArgument = "Test";
+		private string pathArgument = @"Test.5K\FinishLine\1\001.jpg";
+		private int raceArgument = 1;
+		private string eventName = "Test";
+		private const string raceName = "Test.5K";
 		private string stationArgument = "FinishLine";
 		private string cardArgument = "1";
 		private int seqArgument = 1;
@@ -72,7 +74,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			//Arrange
 			HttpStatusCode expected = HttpStatusCode.Forbidden;
 			//Act
-			HttpResponseMessage result = target.Post("test", "", "", null);
+			HttpResponseMessage result = target.Post(1, "", "", null);
 			//Assert
 			Assert.AreEqual(expected, result.StatusCode, "failure message");
 		}
@@ -115,7 +117,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			//Assert
 			Assert.IsNotNull(dataItem, "returned null dataItem");
 			Assert.AreEqual(dataItem.Id, resultData.Id, "Item Id in HttpContent not equal to data Item Id");
-			Assert.AreEqual(raceArgument, resultData.Race, "Race");
+			Assert.AreEqual(raceName, resultData.Race, "RaceName");
 			Assert.AreEqual(stationArgument, resultData.Station, "Station");
 		}
 
@@ -145,7 +147,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			//Act
 			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
 			var bodyString = result.Content.ReadAsStringAsync().Result;
-			var resultData = Json.Decode<Photo>(bodyString);
+			var resultData = Json.Decode<PhotoServer.Models.PhotoData>(bodyString);
 
 			//Assert
 			Assert.AreEqual(expectedTimeStamp, resultData.TimeStamp, "TimeStamp");

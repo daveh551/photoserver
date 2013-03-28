@@ -46,6 +46,7 @@ namespace PhotoServer.DataAccessLayer
 			_distanceData = new DistanceRepository(_distanceDataSet);
 			_raceDataSet = Set<Race>();
 			_raceData = new RaceRepository(_raceDataSet);
+
 		}
 
 	}

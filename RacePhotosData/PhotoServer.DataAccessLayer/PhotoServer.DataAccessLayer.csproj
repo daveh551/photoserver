@@ -54,6 +54,7 @@
     <Compile Include="EFPhotoServerDataSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RaceRepository.cs" />
+    <Compile Include="UsersContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PhotoServer.Domain\PhotoServer.Domain.csproj">

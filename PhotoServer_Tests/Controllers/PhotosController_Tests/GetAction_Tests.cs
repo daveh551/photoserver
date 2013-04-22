@@ -1,13 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Web.Mvc;
 using NUnit.Framework;
 using PhotoServer.Controllers;
 using RacePhotosTestSupport;
+using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using PhotoServer.DataAccessLayer.Storage;
 
 namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 {
@@ -17,13 +15,15 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		#region SetUp / TearDown
 
 		private PhotosController target;
+		private IStorageProvider provider;
 
 		[TestFixtureSetUp]
 		public void InitFixture()
 		{
 			PhotoServer.App_Start.InitializeMapper.MapClasses();
-			ObjectMother.ClearDirectory();
-			ObjectMother.CopyTestFiles();
+			provider = new AzureStorageProvider(@"UseDevelopmentStorage=true", "images");
+			ObjectMother.ClearDirectory(provider);
+			ObjectMother.CopyTestFiles(provider);
 		}
 		[SetUp]
 		public void Init()
@@ -32,7 +32,8 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			var testRecords = ObjectMother.ReturnPhotoDataRecord(3);
 			testRecords.ForEach( r => db.Photos.Add(r));
 			db.SaveChanges();
-			target = new PhotosController(db);
+			provider = new AzureStorageProvider("UserDevelopmentStorage=true", "images");
+			target = new PhotosController(db, provider);
 			target.context = new FakeHttpContext();
 
 		}

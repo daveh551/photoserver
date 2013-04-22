@@ -1,9 +1,9 @@
-using System;
 using NUnit.Framework;
 using PhotoServer.Controllers;
 using PhotoServer.DataAccessLayer;
-using PhotoServer.Domain;
+using PhotoServer.DataAccessLayer.Storage;
 using RacePhotosTestSupport;
+using System;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -27,10 +27,12 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		private string cardArgument = "1";
 		private int seqArgument = 1;
 
+		private IStorageProvider provider;
 		[TestFixtureSetUp]
 		public void InitFixture()
 		{
-			PhotoServer.App_Start.InitializeMapper.MapClasses();	
+			PhotoServer.App_Start.InitializeMapper.MapClasses();
+			provider = new AzureStorageProvider(@"UseDevelopmentStorage=true", "images");
 			ObjectMother.SetPhotoPath();
 		}
 		private IPhotoDataSource fakeDataSource;
@@ -39,7 +41,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		{
 			var fileName = @"..\..\TestFiles\Run For The Next Generation 2011 001.JPG";
 			fakeDataSource =   new FakeDataSource();
-			target = new PhotosController(fakeDataSource);
+			target = new PhotosController(fakeDataSource, provider);
 			target.ControllerContext = new FakeControllerContext();
 			target.ControllerContext.Request = SetupContent(fileName);
 			target.context = new  FakeHttpContext();
@@ -67,17 +69,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 
 		#region Tests
 		
-		[Test]
-		[Ignore("Authentication has to go through the dispatch.")]
-		public void Post_WithoutAuthentication_ShouldReturn401Error()
-		{
-			//Arrange
-			HttpStatusCode expected = HttpStatusCode.Forbidden;
-			//Act
-			HttpResponseMessage result = target.Post(1, "", "", null);
-			//Assert
-			Assert.AreEqual(expected, result.StatusCode, "failure message");
-		}
+	
 		[Test]
 		public void Post_WithNewPhoto_ShouldAddPhotosDataItemToDB()
 		{
@@ -126,13 +118,13 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		public void Post_WithAttachedPhoto_ResultsInPhotoInDirectory()
 		{
 			//Arrange
-			ObjectMother.ClearDirectory();
+			ObjectMother.ClearDirectory(provider);
 
 			//Act
 			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
 			//Assert
 			var resultPath = Path.Combine( ObjectMother.photoPath , pathArgument);
-			Assert.That(File.Exists(resultPath));
+			Assert.That(provider.FileExists(resultPath));
 		}
 
 		

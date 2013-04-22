@@ -17,11 +17,15 @@
 
 
 using System;
+using System.Configuration;
 using PhotoServer.DataAccessLayer;
+using PhotoServer.DataAccessLayer.Storage;
 using PhotoServer.Domain;
 using StructureMap;
 namespace PhotoServer.DependencyResolution {
-    public static class IoC {
+    public static class IoC
+    {
+        private const string PhotoPath = "PhotosPhysicalDirectory";
         public static IContainer Initialize() {
             ObjectFactory.Initialize(x =>
                         {
@@ -32,9 +36,28 @@ namespace PhotoServer.DependencyResolution {
                                     });
 	                        x.For<IPhotoDataSource>()
 	                         .Use(() => new EFPhotoServerDataSource("DefaultConnection"));
+                            if (PhotosPhysicalPathExists())
+                                x.For<IStorageProvider>()
+                                 .Use(
+                                     () =>
+                                     new FileStorageProvider(ConfigurationManager.AppSettings[PhotoPath]));
+                            else
+                            {
+                                x.For<IStorageProvider>()
+                                 .Use(
+                                     () =>
+                                     new AzureStorageProvider(
+                                         ConfigurationManager.ConnectionStrings["AzureStorageConnection"].ConnectionString, "images"));
+                            }
 
                         });
             return ObjectFactory.Container;
+        }
+
+        private static bool PhotosPhysicalPathExists()
+        {
+            return  (!string.IsNullOrEmpty(ConfigurationManager.AppSettings[PhotoPath]));
+            
         }
     }
 }

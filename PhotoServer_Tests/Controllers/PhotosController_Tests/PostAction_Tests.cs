@@ -27,9 +27,9 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		private string cardArgument = "1";
 		private int seqArgument = 1;
 
-		private IStorageProvider provider;
+	    protected IStorageProvider provider;
 		[TestFixtureSetUp]
-		public void InitFixture()
+		public virtual void InitFixture()
 		{
 			PhotoServer.App_Start.InitializeMapper.MapClasses();
 			provider = new AzureStorageProvider(@"UseDevelopmentStorage=true", "images");

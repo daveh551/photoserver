@@ -15,10 +15,10 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		#region SetUp / TearDown
 
 		private PhotosController target;
-		private IStorageProvider provider;
+		protected IStorageProvider provider;
 
 		[TestFixtureSetUp]
-		public void InitFixture()
+		public virtual void InitFixture()
 		{
 			PhotoServer.App_Start.InitializeMapper.MapClasses();
 			provider = new AzureStorageProvider(@"UseDevelopmentStorage=true", "images");
@@ -32,7 +32,6 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			var testRecords = ObjectMother.ReturnPhotoDataRecord(3);
 			testRecords.ForEach( r => db.Photos.Add(r));
 			db.SaveChanges();
-			provider = new AzureStorageProvider("UserDevelopmentStorage=true", "images");
 			target = new PhotosController(db, provider);
 			target.context = new FakeHttpContext();
 

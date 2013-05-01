@@ -8,7 +8,8 @@ using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Mvc;
 
-namespace PhotoServer_Tests.Controllers.PhotosController_Tests
+namespace RacePhotosTestSupport
+ 
 {
     public class FakeControllerContext : HttpControllerContext
     {

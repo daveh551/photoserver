@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace PhotoServer_Tests.Controllers.PhotosController_Tests
+namespace RacePhotosTestSupport
 {
 	public class FakeHttpContext : HttpContextBase
 	{

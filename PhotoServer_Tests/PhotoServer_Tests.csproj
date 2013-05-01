@@ -137,8 +137,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\StructuremapMvc.cs" />
-    <Compile Include="Controllers\PhotosController_Tests\FakeControllerContext.cs" />
-    <Compile Include="Controllers\PhotosController_Tests\FakeHttpContext.cs" />
     <Compile Include="Controllers\PhotosController_Tests\FileSystemGetAction_Tests.cs" />
     <Compile Include="Controllers\PhotosController_Tests\FileSystemPostAction_Tests.cs" />
     <Compile Include="Controllers\PhotosController_Tests\GetAction_Tests.cs" />

@@ -42,6 +42,10 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,6 +54,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractFakeRepository.cs" />
+    <Compile Include="FakeControllerContext.cs" />
+    <Compile Include="FakeHttpContext.cs" />
     <Compile Include="FakeIntRepository.cs" />
     <Compile Include="FakeDataSource.cs" />
     <Compile Include="FakeGuidRepository.cs" />

@@ -147,7 +147,20 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			Assert.AreEqual(expectedVres, resultData.Vres, "Vres");
 		}
 
-
+		
+		[Test]
+		public void Post_WithAttachedPhoto_SetsServerInPhotoData()
+		{
+			//Arrange
+			string expected = "localhost";
+			//Act
+			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
+			var resultLocation = result.Headers.Location.ToString();
+			var resultId = resultLocation.Substring(resultLocation.LastIndexOf('/') + 1);
+			var serverResult = fakeDataSource.Photos.FindById(new Guid(resultId)).Server;
+			//Assert
+			Assert.AreEqual(expected, serverResult, "failure message");
+		}
 		#endregion
 	}
 

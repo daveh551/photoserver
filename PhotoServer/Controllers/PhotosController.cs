@@ -22,7 +22,13 @@ namespace PhotoServer.Controllers
         private IPhotoDataSource _db;
 	    private IStorageProvider _storage;
 	    private string appHome = string.Empty;
-		public HttpContextBase context { get; set; }
+	    private HttpContextBase _context;
+		public HttpContextBase context { get
+		{
+			if (HttpContext.Current != null)
+				return new HttpContextWrapper(HttpContext.Current);
+			return _context;
+		} set { _context = value; } }
 	    private string physicalPhotosPath;
 
         public PhotosController(IPhotoDataSource Db, IStorageProvider storageProvider)
@@ -111,6 +117,8 @@ namespace PhotoServer.Controllers
 					_storage.WriteFile(path, imageArray);
 
 				}
+
+				data.Server = request.RequestUri.Host;
 				_db.Photos.Add(data);
 				_db.SaveChanges();
 			}

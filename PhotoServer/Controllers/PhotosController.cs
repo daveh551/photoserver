@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Diagnostics;
+using AutoMapper;
 using ExifLib;
 using PhotoServer.DataAccessLayer;
 using PhotoServer.DataAccessLayer.Storage;
@@ -19,23 +20,28 @@ namespace PhotoServer.Controllers
 {
     public class PhotosController : ApiController
     {
+		
         private IPhotoDataSource _db;
 	    private IStorageProvider _storage;
 	    private string appHome = string.Empty;
 	    private HttpContextBase _context;
-		public HttpContextBase context { get
-		{
-			if (HttpContext.Current != null)
-				return new HttpContextWrapper(HttpContext.Current);
-			return _context;
-		} set { _context = value; } }
-	    private string physicalPhotosPath;
+		public HttpContextBase context {
+			get
+			{
+
+				if (HttpContext.Current != null)
+					return new HttpContextWrapper(HttpContext.Current);
+				return _context;
+			}
+			set { _context = value; }
+		}
+
 
         public PhotosController(IPhotoDataSource Db, IStorageProvider storageProvider)
         {
             _db = Db;
 	        _storage = storageProvider;
-
+			Trace.TraceInformation("Created PhotosController with {0}", storageProvider.GetType().ToString());
         }
         // GET api/photos
 		[Authorize(Roles = "Administrator")]
@@ -78,10 +84,13 @@ namespace PhotoServer.Controllers
         [Authorize(Roles="Administrator")]
         public HttpResponseMessage Post(int race, string station, string card, int? seq)
         {
+	        var returnCode = HttpStatusCode.Created;
 	        int Sequence = seq ?? GetMaxSeq(race, station, card) + 1;
+			Trace.TraceInformation("Got request to upload photo: race = {0}, station={1}, card={2}, seq={3}", race, station, card, seq ?? 0);
 	        var data = new Photo(race, station, card, Sequence);
 	        data.Race = _db.Races.FindById(race);
 	        var path = data.SetPath();
+			Trace.TraceInformation("PhotoStoragePath = {0}", path);
 	        var request = ControllerContext.Request;
 			if (request.Content == null || request.Content.Headers == null || request.Content.Headers.ContentType == null)
 			{ return new HttpResponseMessage(HttpStatusCode.BadRequest);}
@@ -89,6 +98,7 @@ namespace PhotoServer.Controllers
 			if (contentType == "image/jpeg" || contentType == "image/jpg")
 			{
 				var imageSize = request.Content.Headers.ContentLength;
+				Trace.TraceInformation("ContentLength is {0} bytes", imageSize);
 				byte[] imageArray;
 				using (var image = request.Content.ReadAsStreamAsync().Result)
 				{
@@ -103,6 +113,7 @@ namespace PhotoServer.Controllers
 					{
 						bytesRead += image.Read(imageArray, bytesRead, imageSz - bytesRead);
 					}
+					Trace.TraceInformation("Getting Exif Data");
 					GetExifData(image, data);
 
 
@@ -114,24 +125,37 @@ namespace PhotoServer.Controllers
 
 				if (!_storage.FileExists(path))
 				{
+					Trace.TraceInformation("Writing photo to storage file {0}", path);
 					_storage.WriteFile(path, imageArray);
 
 				}
+				else
+				{
+					returnCode = HttpStatusCode.BadRequest;
+					Trace.TraceError("File {0} already exists", path);
+				}
 
 				data.Server = request.RequestUri.Host;
-				_db.Photos.Add(data);
-				_db.SaveChanges();
+				if (returnCode == HttpStatusCode.Created)
+				{
+					Trace.TraceInformation("Adding photo data to database");
+					_db.Photos.Add(data);
+					_db.SaveChanges();
+				}
 			}
 			else
 			{
 				return new HttpResponseMessage(HttpStatusCode.BadRequest);
 			}
-            var response = new HttpResponseMessage(HttpStatusCode.Created);
-	        var uri =new Uri("/api/Photos/" + data.Id.ToString(), UriKind.Relative);
-	        response.Headers.Location = uri;
-	        var modelData = Mapper.Map<PhotoServer.Domain.Photo, Models.PhotoData>(data);
-	        response.Content = new ObjectContent<Models.PhotoData>(modelData, new JsonMediaTypeFormatter());
-            return response;
+            var response = new HttpResponseMessage(returnCode);
+	        if (returnCode == HttpStatusCode.Created)
+	        {
+		        var uri = new Uri("/api/Photos/" + data.Id.ToString(), UriKind.Relative);
+		        response.Headers.Location = uri;
+		        var modelData = Mapper.Map<PhotoServer.Domain.Photo, Models.PhotoData>(data);
+		        response.Content = new ObjectContent<Models.PhotoData>(modelData, new JsonMediaTypeFormatter());
+	        }
+	        return response;
         }
 
 	    private static void GetExifData(Stream image, Photo data)

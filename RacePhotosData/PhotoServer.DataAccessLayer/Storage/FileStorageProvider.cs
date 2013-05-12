@@ -12,6 +12,7 @@ namespace PhotoServer.DataAccessLayer.Storage
 		private string _root;
 		public FileStorageProvider(string root)
 		{
+			System.Diagnostics.Trace.TraceInformation("Creating FileStorageProvider for diretory {0}", root);
 			_root = root;
 		}
 		public bool FileExists(string path)

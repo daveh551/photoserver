@@ -43,11 +43,12 @@ namespace PhotoServer.DependencyResolution {
                                      new FileStorageProvider(ConfigurationManager.AppSettings[PhotoPath]));
                             else
                             {
-                                x.For<IStorageProvider>()
-                                 .Use(
-                                     () =>
-                                     new AzureStorageProvider(
-                                         ConfigurationManager.ConnectionStrings["AzureStorageConnection"].ConnectionString, "images"));
+	                            x.For<IStorageProvider>()
+	                             .Use(
+		                             () =>
+				                             new AzureStorageProvider(
+					                             ConfigurationManager.ConnectionStrings["AzureStorageConnection"].ConnectionString,
+					                             "images")) ;
                             }
 
                         });

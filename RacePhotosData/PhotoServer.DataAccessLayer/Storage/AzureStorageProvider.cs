@@ -15,6 +15,7 @@ namespace PhotoServer.DataAccessLayer.Storage
 		private CloudBlobContainer _rootContainer;
 		public AzureStorageProvider(string azureConnectionString, string container)
 		{
+			System.Diagnostics.Trace.TraceInformation("Creating new AzureStorageProvider for container {0}", container);
 			_storageAccount = CloudStorageAccount.Parse(azureConnectionString);
 			_blobClient = _storageAccount.CreateCloudBlobClient();
 			_rootContainer = _blobClient.GetContainerReference(container);

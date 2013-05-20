@@ -33,7 +33,6 @@ namespace PhotoServer.DataAccessLayer.Storage
 		}
 		bool IStorageProvider.FileExists(string path)
 		{
-
 			return _rootContainer.GetBlockBlobReference(path).Exists();
 		}
 

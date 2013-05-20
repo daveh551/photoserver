@@ -77,6 +77,10 @@
     <Compile Include="EventRepository.cs" />
     <Compile Include="IPhotoDataSource.cs" />
     <Compile Include="IRepository.cs" />
+    <Compile Include="Migrations\201305181842445_Initial.cs" />
+    <Compile Include="Migrations\201305181842445_Initial.Designer.cs">
+      <DependentUpon>201305181842445_Initial.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="PhotoDataRepository.cs" />
     <Compile Include="EFPhotoServerDataSource.cs" />
@@ -96,6 +100,11 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201305181842445_Initial.resx">
+      <DependentUpon>201305181842445_Initial.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

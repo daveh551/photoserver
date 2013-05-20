@@ -26,6 +26,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		private string stationArgument = "FinishLine";
 		private string cardArgument = "1";
 		private int seqArgument = 1;
+		private int fileSize;
 
 	    protected IStorageProvider provider;
 		[TestFixtureSetUp]
@@ -52,8 +53,8 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			var req = new HttpRequestMessage(HttpMethod.Post, "http://localhost:6471/api/Photos/?path=" + pathArgument);
 			using (var file = new BinaryReader(new FileStream(fileName, FileMode.Open)))
 			{
-				var fileSize = new FileInfo(fileName).Length;
-				var image = file.ReadBytes((int) fileSize);
+				fileSize = (int) new FileInfo(fileName).Length;
+				var image = file.ReadBytes( fileSize);
 				req.Content = new ByteArrayContent(image);
 				req.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
 			}
@@ -74,6 +75,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		public void Post_WithNewPhoto_ShouldAddPhotosDataItemToDB()
 		{
 			//Arrange
+			ObjectMother.ClearDirectory(provider);
 			//Act
 			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
 			//Assert
@@ -85,6 +87,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		public void Post_WithNewPhoto_ReturnsLocationHeaderWithGuid()
 		{
 			//Arrange
+			ObjectMother.ClearDirectory(provider);
 			//Act
 			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
 			var hdrs = result.Headers;
@@ -100,9 +103,11 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		public  void  Post_WithNewData_ReturnsPhotoDataItemInMessageBody()
 		{
 			//Arrange
+			ObjectMother.ClearDirectory(provider);
 			//Act
 			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
 			var dataItem = fakeDataSource.Photos.FindAll().FirstOrDefault();
+			Assert.AreEqual(HttpStatusCode.Created, result.StatusCode, "request failed to return Created status code");
 			var body = result.Content;
 			var bodyString = body.ReadAsStringAsync().Result;
 			var resultData = Json.Decode<PhotoServer.Models.PhotoData>(bodyString);
@@ -136,6 +141,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			DateTime expectedTimeStamp = new DateTime(2011, 10, 22, 8, 28, 59, 60);
 			int expectedHres = 3008;
 			int expectedVres = 2000;
+			ObjectMother.ClearDirectory(provider);
 			//Act
 			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
 			var bodyString = result.Content.ReadAsStringAsync().Result;
@@ -153,13 +159,52 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		{
 			//Arrange
 			string expected = "localhost";
+			ObjectMother.ClearDirectory(provider);
 			//Act
 			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
-			var resultLocation = result.Headers.Location.ToString();
-			var resultId = resultLocation.Substring(resultLocation.LastIndexOf('/') + 1);
+			var resultId = GetResultGuid(result);
 			var serverResult = fakeDataSource.Photos.FindById(new Guid(resultId)).Server;
 			//Assert
 			Assert.AreEqual(expected, serverResult, "failure message");
+		}
+
+		private static string GetResultGuid(HttpResponseMessage result)
+		{
+			var resultLocation = result.Headers.Location.ToString();
+			var resultId = resultLocation.Substring(resultLocation.LastIndexOf('/') + 1);
+			return resultId;
+		}
+
+
+		[Test]
+		public void Post_WithAttachedPhoto_RecordsFileLengthInDB()
+		{
+			//Arrange
+			ObjectMother.ClearDirectory(provider);
+			//Act
+			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
+			var resultId = GetResultGuid(result);
+			var fileLen = fakeDataSource.Photos.FindById(new Guid(resultId)).FileSize;
+			//Assert
+			Assert.AreEqual(fileSize, fileLen, "Recorded fileLen differs ");
+		}
+
+		
+		[Test]
+		public void Post_WithAttachedPhoto_SetsLastAccessTimeToCurrentTime()
+		{
+			//Arrange
+			DateTime expectedAccessTime = DateTime.Now;
+			ObjectMother.ClearDirectory(provider);
+			//Act
+			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
+			Assert.AreEqual(HttpStatusCode.Created, result.StatusCode, "Failed to return Created status");
+			var resultId = GetResultGuid(result);
+			var accessTime = fakeDataSource.Photos.FindById(new Guid(resultId)).LastAccessed;
+			//Assert
+			Assert.IsNotNull(accessTime, "accessTime in DB is null");
+			Assert.That(accessTime,Is.GreaterThanOrEqualTo(expectedAccessTime));
+			Assert.That(accessTime, Is.LessThanOrEqualTo(DateTime.Now));
 		}
 		#endregion
 	}

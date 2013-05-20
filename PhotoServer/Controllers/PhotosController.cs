@@ -113,6 +113,8 @@ namespace PhotoServer.Controllers
 					{
 						bytesRead += image.Read(imageArray, bytesRead, imageSz - bytesRead);
 					}
+					data.FileSize = bytesRead;
+					data.LastAccessed = DateTime.Now;
 					Trace.TraceInformation("Getting Exif Data");
 					GetExifData(image, data);
 

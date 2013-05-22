@@ -18,6 +18,7 @@
 
 using System;
 using System.Configuration;
+using System.Diagnostics;
 using PhotoServer.DataAccessLayer;
 using PhotoServer.DataAccessLayer.Storage;
 using PhotoServer.Domain;
@@ -57,8 +58,11 @@ namespace PhotoServer.DependencyResolution {
 
         private static bool PhotosPhysicalPathExists()
         {
-            return  (!string.IsNullOrEmpty(ConfigurationManager.AppSettings[PhotoPath]));
-            
+	        var photosPhysicalPath = ConfigurationManager.AppSettings[PhotoPath];
+			Trace.TraceInformation("Got PhotosPhysicalPath Configuration = {0} ", photosPhysicalPath);
+
+            if (string.IsNullOrEmpty(photosPhysicalPath)) return false;
+	        return (photosPhysicalPath.Substring(1, 2) == @":\");
         }
     }
 }

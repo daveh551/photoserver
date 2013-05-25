@@ -56,6 +56,7 @@
     <Compile Include="GuidEntity.cs" />
     <Compile Include="IntEntity.cs" />
     <Compile Include="Photo.cs" />
+    <Compile Include="Photographer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Race.cs" />
   </ItemGroup>

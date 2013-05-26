@@ -39,6 +39,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -56,6 +59,7 @@
     <Compile Include="AbstractFakeRepository.cs" />
     <Compile Include="FakeControllerContext.cs" />
     <Compile Include="FakeHttpContext.cs" />
+    <Compile Include="FakeIntReferenceRepository.cs" />
     <Compile Include="FakeIntRepository.cs" />
     <Compile Include="FakeDataSource.cs" />
     <Compile Include="FakeGuidRepository.cs" />
@@ -71,6 +75,9 @@
       <Project>{f8be44f9-5540-4d9d-84f8-a2614cd30987}</Project>
       <Name>PhotoServer.Domain</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

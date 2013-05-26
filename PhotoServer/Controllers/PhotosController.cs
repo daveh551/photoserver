@@ -15,6 +15,7 @@ using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
+using PhotoServer.Models;
 
 namespace PhotoServer.Controllers
 {
@@ -82,15 +83,14 @@ namespace PhotoServer.Controllers
         // POST api/photos
         
         [Authorize(Roles="Administrator")]
-        public HttpResponseMessage Post(int race, string station, string card, int? seq)
+        public HttpResponseMessage Post()
         {
 	        var returnCode = HttpStatusCode.Created;
-	        int Sequence = seq ?? GetMaxSeq(race, station, card) + 1;
-			Trace.TraceInformation("Got request to upload photo: race = {0}, station={1}, card={2}, seq={3}", race, station, card, seq ?? 0);
-	        var data = new Photo(race, station, card, Sequence);
-	        data.Race = _db.Races.FindById(race);
-	        var path = data.SetPath();
-			Trace.TraceInformation("PhotoStoragePath = {0}", path);
+			Trace.TraceInformation("Got request to upload photo" );
+	        var data = new Photo();
+	        data.Id = Guid.NewGuid();
+	        data.Path = "originals/" + data.Id.ToString();
+			Trace.TraceInformation("PhotoStoragePath = {0}", data.Path);
 	        var request = ControllerContext.Request;
 			if (request.Content == null || request.Content.Headers == null || request.Content.Headers.ContentType == null)
 			{ return new HttpResponseMessage(HttpStatusCode.BadRequest);}
@@ -125,19 +125,12 @@ namespace PhotoServer.Controllers
 
 				
 
-				if (!_storage.FileExists(path))
-				{
-					Trace.TraceInformation("Writing photo to storage file {0}", path);
-					_storage.WriteFile(path, imageArray);
-
-				}
-				else
-				{
-					returnCode = HttpStatusCode.BadRequest;
-					Trace.TraceError("File {0} already exists", path);
-				}
+				Trace.TraceInformation("Writing photo to storage file {0}", data.Path);
+				_storage.WriteFile(data.Path, imageArray);
 
 				data.Server = request.RequestUri.Host;
+				data.CreatedBy = context.User.Identity.Name;
+				data.CreatedDate = DateTime.Now;
 				if (returnCode == HttpStatusCode.Created)
 				{
 					Trace.TraceInformation("Adding photo data to database");
@@ -176,10 +169,20 @@ namespace PhotoServer.Controllers
 					    data.TimeStamp = timeStamp;
 			    }
 			    UInt16 hres, vres;
+			    object tagVal;
 			    if (reader.GetTagValue(ExifTags.PixelXDimension, out hres))
 				    data.Hres = (int) hres;
 			    if (reader.GetTagValue(ExifTags.PixelYDimension, out vres))
 				    data.Vres = (int) vres;
+			    if (reader.GetTagValue(ExifTags.FNumber, out tagVal))
+				    data.FStop = string.Format("f/{0:g2}", tagVal.ToString());
+			    if (reader.GetTagValue(ExifTags.ExposureTime, out tagVal))
+				    data.ShutterSpeed = string.Format("1/{0:g0}", 1/(double) tagVal);
+				if (reader.GetTagValue(ExifTags.ISOSpeedRatings, out tagVal))
+					data.ISOspeed = (short) (ushort) tagVal;
+			    if (reader.GetTagValue(ExifTags.FocalLength, out tagVal))
+				    data.FocalLength = (short) (double) tagVal;
+				
 			    if (reader.GetTagValue(ExifTags.SubsecTimeOriginal, out timeString))
 			    {
 				    int msec;
@@ -196,19 +199,40 @@ namespace PhotoServer.Controllers
 	    private int GetMaxSeq(int race, string station, string card)
 	    {
 			    var list = _db.Photos.FindAll()
-			       .Where(pd => pd.RaceId == race && pd.Station == station && pd.Card == card)
-			       .Select(pd => pd.Sequence).ToList<int>();
+			       .Where(pd => pd.RaceId == race && pd.Station == station && pd.Card == card && pd.Sequence.HasValue)
+			       .Select(pd => pd.Sequence.Value).ToList<int>();
 		    if (list.Count > 0) return list.Max();
 		    return 0;
 	    }
 
 	    // PUT api/photos/5
-        public void Put(int id, [FromBody]string value)
+        public void Put(Guid id, PhotoData newValues)
         {
-			throw new NotImplementedException("PUT operation to /api/Photos/ is not yet implemented");
+	        var existingValues = _db.Photos.FindById(id);
+			if (existingValues == null) 
+				throw new HttpResponseException(HttpStatusCode.NotFound);
+	        CopyWriteableValues(newValues, existingValues);
+	        _db.SaveChanges();
+
         }
 
-        // DELETE api/photos/5
+	    private void CopyWriteableValues(PhotoData newValues, Photo existingValues)
+	    {
+		    existingValues.Card = newValues.Card;
+		    var photographer = _db.Photographers.Find(ph => ph.Initials == newValues.PhotographerInitials).FirstOrDefault();
+		    if (photographer != null)
+			    existingValues.Photographer = photographer;	
+		    var race = newValues.Race.Split('.');
+		    var foundRace =
+			    _db.Races.Find(r => r.Event.EventName == race[0] && r.Distance.RaceDistance == race[1]).SingleOrDefault();
+		    if (foundRace != null)
+			    existingValues.RaceId = foundRace.Id;
+		    existingValues.Sequence = newValues.Sequence;
+		    existingValues.Station = newValues.Station;
+
+	    }
+
+	    // DELETE api/photos/5
         public void Delete(int id)
         {
 			throw new NotImplementedException("DELETE operation to /api/Photos is not yet implemented");

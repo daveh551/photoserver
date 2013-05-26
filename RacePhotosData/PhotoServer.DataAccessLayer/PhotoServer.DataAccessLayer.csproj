@@ -72,18 +72,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractReferenceRepository.cs" />
     <Compile Include="AbstractRepository.cs" />
     <Compile Include="DistanceRepository.cs" />
     <Compile Include="EventRepository.cs" />
     <Compile Include="IPhotoDataSource.cs" />
+    <Compile Include="IReferenceRepository.cs" />
     <Compile Include="IRepository.cs" />
     <Compile Include="Migrations\201305181842445_Initial.cs" />
     <Compile Include="Migrations\201305181842445_Initial.Designer.cs">
       <DependentUpon>201305181842445_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201305250238399_AddPhotographerRecord.cs" />
+    <Compile Include="Migrations\201305250238399_AddPhotographerRecord.Designer.cs">
+      <DependentUpon>201305250238399_AddPhotographerRecord.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201305250337150_AdjustPhotoFields.cs" />
+    <Compile Include="Migrations\201305250337150_AdjustPhotoFields.Designer.cs">
+      <DependentUpon>201305250337150_AdjustPhotoFields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201305252119485_AddShortFieldsToPhotos.cs" />
+    <Compile Include="Migrations\201305252119485_AddShortFieldsToPhotos.Designer.cs">
+      <DependentUpon>201305252119485_AddShortFieldsToPhotos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201305252136028_MakePhotoFieldsNullable.cs" />
+    <Compile Include="Migrations\201305252136028_MakePhotoFieldsNullable.Designer.cs">
+      <DependentUpon>201305252136028_MakePhotoFieldsNullable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="PhotoDataRepository.cs" />
     <Compile Include="EFPhotoServerDataSource.cs" />
+    <Compile Include="PhotographerReferenceRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RaceRepository.cs" />
     <Compile Include="Storage\AzureStorageProvider.cs" />
@@ -104,6 +123,18 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201305181842445_Initial.resx">
       <DependentUpon>201305181842445_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201305250238399_AddPhotographerRecord.resx">
+      <DependentUpon>201305250238399_AddPhotographerRecord.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201305250337150_AdjustPhotoFields.resx">
+      <DependentUpon>201305250337150_AdjustPhotoFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201305252119485_AddShortFieldsToPhotos.resx">
+      <DependentUpon>201305252119485_AddShortFieldsToPhotos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201305252136028_MakePhotoFieldsNullable.resx">
+      <DependentUpon>201305252136028_MakePhotoFieldsNullable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

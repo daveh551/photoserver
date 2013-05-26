@@ -18,6 +18,8 @@ namespace RacePhotosTestSupport
 		public IRepository<Event, int> Events { get { return _eventData; } }
 	    private FakeIntRepository<Distance> _distanceData;
 		public IRepository<Distance, int> Distances { get { return _distanceData; } }
+	    private FakeIntReferenceRepository<Photographer> _photographerData;
+		public IReferenceRepository<Photographer, int> Photographers { get { return _photographerData; } } 
  		
 
         public FakeDataSource()
@@ -30,7 +32,14 @@ namespace RacePhotosTestSupport
 	        InitEventData();
 			_raceData = new FakeIntRepository<Race>();
 	        InitRaceData();
+			_photographerData = new FakeIntReferenceRepository<Photographer>();
+	        InitPhotographerData();
         }
+
+	    private void InitPhotographerData()
+	    {
+		    _photographerData.Add(new Photographer {Id = 1, Initials = "dwh", Name = "Dave Hanna", PhoneNumber = "214-641-9986"});
+	    }
 
 	    private void InitRaceData()
 	    {

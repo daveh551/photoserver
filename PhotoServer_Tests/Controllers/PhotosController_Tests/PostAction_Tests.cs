@@ -50,7 +50,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 		private HttpRequestMessage SetupContent(string fileName)
 		{
 
-			var req = new HttpRequestMessage(HttpMethod.Post, "http://localhost:6471/api/Photos/?path=" + pathArgument);
+			var req = new HttpRequestMessage(HttpMethod.Post, "http://localhost:6471/api/Photos");
 			using (var file = new BinaryReader(new FileStream(fileName, FileMode.Open)))
 			{
 				fileSize = (int) new FileInfo(fileName).Length;
@@ -77,7 +77,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			//Arrange
 			ObjectMother.ClearDirectory(provider);
 			//Act
-			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
+			var result = target.Post();
 			//Assert
 			Assert.AreEqual(1, fakeDataSource.Photos.FindAll().Count((item) =>true));
 		}
@@ -89,7 +89,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			//Arrange
 			ObjectMother.ClearDirectory(provider);
 			//Act
-			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
+			var result = target.Post();
 			var hdrs = result.Headers;
 			
 			//Assert
@@ -105,7 +105,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			//Arrange
 			ObjectMother.ClearDirectory(provider);
 			//Act
-			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
+			var result = target.Post();
 			var dataItem = fakeDataSource.Photos.FindAll().FirstOrDefault();
 			Assert.AreEqual(HttpStatusCode.Created, result.StatusCode, "request failed to return Created status code");
 			var body = result.Content;
@@ -114,8 +114,11 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			//Assert
 			Assert.IsNotNull(dataItem, "returned null dataItem");
 			Assert.AreEqual(dataItem.Id, resultData.Id, "Item Id in HttpContent not equal to data Item Id");
-			Assert.AreEqual(raceName, resultData.Race, "RaceName");
-			Assert.AreEqual(stationArgument, resultData.Station, "Station");
+			Assert.IsNullOrEmpty(resultData.Race);
+			Assert.IsNullOrEmpty(resultData.Station);
+			Assert.IsNullOrEmpty(resultData.Card);
+			Assert.IsNullOrEmpty(resultData.PhotographerInitials);
+			Assert.IsNull(resultData.Sequence);
 		}
 
 		
@@ -126,9 +129,9 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			ObjectMother.ClearDirectory(provider);
 
 			//Act
-			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
+			var result = target.Post();
 			//Assert
-			var resultPath = Path.Combine( ObjectMother.photoPath , pathArgument);
+			var resultPath = Path.Combine("originals", GetResultGuid(result));
 			Assert.That(provider.FileExists(resultPath));
 		}
 
@@ -143,7 +146,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			int expectedVres = 2000;
 			ObjectMother.ClearDirectory(provider);
 			//Act
-			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
+			var result = target.Post();
 			var bodyString = result.Content.ReadAsStringAsync().Result;
 			var resultData = Json.Decode<PhotoServer.Models.PhotoData>(bodyString);
 
@@ -161,7 +164,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			string expected = "localhost";
 			ObjectMother.ClearDirectory(provider);
 			//Act
-			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
+			var result = target.Post();
 			var resultId = GetResultGuid(result);
 			var serverResult = fakeDataSource.Photos.FindById(new Guid(resultId)).Server;
 			//Assert
@@ -182,7 +185,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			//Arrange
 			ObjectMother.ClearDirectory(provider);
 			//Act
-			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
+			var result = target.Post();
 			var resultId = GetResultGuid(result);
 			var fileLen = fakeDataSource.Photos.FindById(new Guid(resultId)).FileSize;
 			//Assert
@@ -197,7 +200,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			DateTime expectedAccessTime = DateTime.Now;
 			ObjectMother.ClearDirectory(provider);
 			//Act
-			var result = target.Post(raceArgument, stationArgument, cardArgument, seqArgument);
+			var result = target.Post();
 			Assert.AreEqual(HttpStatusCode.Created, result.StatusCode, "Failed to return Created status");
 			var resultId = GetResultGuid(result);
 			var accessTime = fakeDataSource.Photos.FindById(new Guid(resultId)).LastAccessed;
@@ -205,6 +208,99 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			Assert.IsNotNull(accessTime, "accessTime in DB is null");
 			Assert.That(accessTime,Is.GreaterThanOrEqualTo(expectedAccessTime));
 			Assert.That(accessTime, Is.LessThanOrEqualTo(DateTime.Now));
+		}
+
+		
+		[Test]
+		public void Post_WithAttachedPhoto_SetsFStopInDataReturned()
+		{
+			//Arrange
+			string expected = "f/6.3";
+			ObjectMother.ClearDirectory(provider);
+			//Act
+			var result = target.Post();
+			Assert.AreEqual(HttpStatusCode.Created, result.StatusCode, "Failed to return Created status");
+			var bodyString = result.Content.ReadAsStringAsync().Result;
+			var resultData = Json.Decode<PhotoServer.Models.PhotoData>(bodyString);
+			//Assert
+			Assert.AreEqual(expected, resultData.FStop, "FStop");
+		}
+		[Test]
+		public void Post_WithAttachedPhoto_SetsShutterSpeedInDataReturned()
+		{
+			//Arrange
+			string expected = "1/160";
+			ObjectMother.ClearDirectory(provider);
+			//Act
+			var result = target.Post();
+			Assert.AreEqual(HttpStatusCode.Created, result.StatusCode, "Failed to return Created status");
+			var bodyString = result.Content.ReadAsStringAsync().Result;
+			var resultData = Json.Decode<PhotoServer.Models.PhotoData>(bodyString);
+			//Assert
+			Assert.AreEqual(expected, resultData.ShutterSpeed, "ShutterSpeed");
+		}
+		[Test]
+		public void Post_WithAttachedPhoto_SetsISOSpeedInDataReturned()
+		{
+			//Arrange
+			short expected = 200;
+			ObjectMother.ClearDirectory(provider);
+			//Act
+			var result = target.Post();
+			Assert.AreEqual(HttpStatusCode.Created, result.StatusCode, "Failed to return Created status");
+			var bodyString = result.Content.ReadAsStringAsync().Result;
+			var resultData = Json.Decode<PhotoServer.Models.PhotoData>(bodyString);
+			//Assert
+			Assert.AreEqual(expected, resultData.ISOSpeed, "ISOSpeed");
+		}
+
+		[Test]
+		public void Post_WithAttachedPhoto_SetsFocalLengthInDataReturned()
+		{
+			//Arrange
+			short expected = 26;
+			ObjectMother.ClearDirectory(provider);
+			//Act
+			var result = target.Post();
+			Assert.AreEqual(HttpStatusCode.Created, result.StatusCode, "Failed to return Created status");
+			var bodyString = result.Content.ReadAsStringAsync().Result;
+			var resultData = Json.Decode<PhotoServer.Models.PhotoData>(bodyString);
+			//Assert
+			Assert.AreEqual(expected, resultData.FocalLength, "FocalLength");
+		}
+
+		
+		[Test]
+		public void Post_PostNewPhoto_SetsCreatedByToUser()
+		{
+			//Arrange
+			string expected = "FinishLineAdmin";
+			ObjectMother.ClearDirectory(provider);
+			//Act
+			var result = target.Post();
+			Assert.AreEqual(HttpStatusCode.Created, result.StatusCode, "Failed to return Created status");
+			var bodyString = result.Content.ReadAsStringAsync().Result;
+			var resultData = Json.Decode<PhotoServer.Models.PhotoData>(bodyString);
+			//Assert
+			Assert.AreEqual(expected, resultData.CreatedBy, "CreatedBy not set correctly");
+		}
+
+		
+		[Test]
+		public void Post_PostNewPhoto_SetCreatedDateToNow()
+		{
+			//Arrange
+			DateTime expectedTime = DateTime.Now;
+			ObjectMother.ClearDirectory(provider);
+			//Act
+			var result = target.Post();
+			Assert.AreEqual(HttpStatusCode.Created, result.StatusCode, "Failed to return Created status");
+			var bodyString = result.Content.ReadAsStringAsync().Result;
+			var resultData = Json.Decode<PhotoServer.Models.PhotoData>(bodyString);
+			//Assert
+			Assert.IsNotNull(resultData.CreatedDate);
+			Assert.That(resultData.CreatedDate, Is.GreaterThanOrEqualTo(expectedTime));
+			Assert.That(resultData.CreatedDate, Is.LessThanOrEqualTo(DateTime.Now));
 		}
 		#endregion
 	}

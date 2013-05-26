@@ -75,7 +75,7 @@ namespace RacePhotosTestSupport
 							Station = "FinishLine",
 							Card = "1",
 							Sequence = 1,
-							Path = @"Test.5K/FinishLine/1/001.JPG",
+							Path = @"originals/E0CAF539-5C32-432B-AAC4-B01CD4EABB3A" ,
 							Hres = 3008,
 							Vres = 2000,
 							TimeStamp = new DateTime(2011, 10, 22, 8, 48, 59, 60)
@@ -88,7 +88,7 @@ namespace RacePhotosTestSupport
 							Station = "FinishLine",
 							Card = "1",
 							Sequence = 3,
-							Path = @"Test.5K/FinishLine/1/003.JPG",
+							Path = @"originals/24249DF5-C9FF-4B17-A259-514586F07C6B",
 							Hres = 3008,
 							Vres = 2000,
 							TimeStamp = new DateTime(2011, 10, 22, 8, 29, 0)
@@ -101,7 +101,7 @@ namespace RacePhotosTestSupport
 							Station = "FinishLine",
 							Card = "1",
 							Sequence = 4,
-							Path = @"Test.5K/FinishLine/1/004.JPG",
+							Path = @"originals/E5034D6B-3B26-4F03-8F9E-0EA1F5BE55C7",
 							Hres = 3008,
 							Vres = 2000,
 							TimeStamp = new DateTime(2011, 10, 22, 8, 29, 0)

@@ -114,7 +114,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			//Assert
 			Assert.IsNotNull(dataItem, "returned null dataItem");
 			Assert.AreEqual(dataItem.Id, resultData.Id, "Item Id in HttpContent not equal to data Item Id");
-			Assert.IsNullOrEmpty(resultData.Race);
+			Assert.IsNullOrEmpty(resultData.Event);
 			Assert.IsNullOrEmpty(resultData.Station);
 			Assert.IsNullOrEmpty(resultData.Card);
 			Assert.IsNullOrEmpty(resultData.PhotographerInitials);

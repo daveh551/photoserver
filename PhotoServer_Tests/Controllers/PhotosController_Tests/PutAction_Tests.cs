@@ -59,7 +59,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			string expected = "FillsInDataFields";
 			var photoRecord = fakeDataSource.Photos.FindAll().FirstOrDefault();
 			var photoData = AutoMapper.Mapper.Map<Photo, PhotoData>(photoRecord);
-			photoData.Race = "Test.5K";
+			photoData.Event = "Test";
 			photoData.Station = "FinishLine";
 			photoData.Card = "1";
 			photoData.Sequence = 1;
@@ -70,7 +70,7 @@ namespace PhotoServer_Tests.Controllers.PhotosController_Tests
 			//Assert
 			var resultPhotoRecord = fakeDataSource.Photos.FindById(photoRecord.Id);
 			Assert.IsNotNull(resultPhotoRecord);
-			Assert.AreEqual(1, resultPhotoRecord.RaceId,  "Race");
+			Assert.AreEqual(1, resultPhotoRecord.EventId,  "Event");
 			Assert.AreEqual("FinishLine", resultPhotoRecord.Station, "Station");
 			Assert.AreEqual("1", resultPhotoRecord.Card, "Card");
 			Assert.AreEqual(1, resultPhotoRecord.Sequence, "Sequence");

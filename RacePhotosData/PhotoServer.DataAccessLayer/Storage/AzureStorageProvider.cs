@@ -50,7 +50,7 @@ namespace PhotoServer.DataAccessLayer.Storage
 		{
 			var blobRef = _rootContainer.GetBlockBlobReference(path);
 			
-			if (blobRef.Exists())  throw new IOException(string.Format("Blob {0} already exists in Containter {1}", path, _rootContainer.Name));
+			if (blobRef.Exists())  throw new IOException(string.Format("Blob {0} already exists in Container {1}", path, _rootContainer.Name));
 			using (var memory = new MemoryStream(imageArray))
 				blobRef.UploadFromStream(memory);
 		}

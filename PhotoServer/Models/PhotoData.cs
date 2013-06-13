@@ -9,7 +9,7 @@ namespace PhotoServer.Models
 	public class PhotoData
 	{
 		public Guid Id { get; set; }
-		public virtual string Race { get; set; }
+		public virtual string Event { get; set; }
 		public virtual string Station { get; set; }
 		public virtual string Card { get; set; }
 		public virtual int? Sequence { get; set; }

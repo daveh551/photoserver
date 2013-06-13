@@ -24,12 +24,12 @@ namespace RacePhotosTestSupport
 				ClearFileStorageDirectory();
 				return;
 			}
-			photoPath = string.Empty;
-			var files = provider.GetFiles(Path.Combine(photoPath, testDirectory));
+			photoPath = "originals";
+			var files = provider.GetFiles(photoPath);
 			foreach (var file in files)
 			{
 
-				provider.DeleteFile(Path.Combine(testDirectory, file));
+				provider.DeleteFile(Path.Combine(photoPath, file));
 			}
 
 		}
@@ -116,14 +116,16 @@ namespace RacePhotosTestSupport
 		{
 			SetPhotoPath();
 			var sourcePhotos = new DirectoryInfo(@"..\..\..\PhotoServer_Tests\TestFiles").EnumerateFiles().ToList();
+			int ix = 0;
 			foreach (var photoData in testData)
 			{
 				var destFile = photoData.Path;
-				var fileName = Path.GetFileName(destFile);
-				var sourceFile = sourcePhotos.Where(p => p.Name.EndsWith(fileName)).Select(f => f.FullName).Single();
-				var fileStream = new FileStream(sourceFile, FileMode.Open);
-				var fileData = new BinaryReader(fileStream).ReadBytes((int) fileStream.Length);
-				provider.WriteFile(destFile, fileData);
+				var sourceFile = sourcePhotos[ix++].FullName;
+				using (var fileStream = new FileStream(sourceFile, FileMode.Open))
+				{
+					var fileData = new BinaryReader(fileStream).ReadBytes((int)fileStream.Length);
+					provider.WriteFile(destFile, fileData);
+				}
 			}
 		}
 	}

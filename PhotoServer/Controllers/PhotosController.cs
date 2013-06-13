@@ -196,10 +196,9 @@ namespace PhotoServer.Controllers
 
 
 
-	    private int GetMaxSeq(int race, string station, string card)
+	    private int GetMaxSeq(int eventId, string station, string card)
 	    {
-			    var list = _db.Photos.FindAll()
-			       .Where(pd => pd.RaceId == race && pd.Station == station && pd.Card == card && pd.Sequence.HasValue)
+			    var list = _db.Photos.Find(pd => pd.EventId == eventId && pd.Station == station && pd.Card == card && pd.Sequence.HasValue)
 			       .Select(pd => pd.Sequence.Value).ToList<int>();
 		    if (list.Count > 0) return list.Max();
 		    return 0;
@@ -221,12 +220,8 @@ namespace PhotoServer.Controllers
 		    existingValues.Card = newValues.Card;
 		    var photographer = _db.Photographers.Find(ph => ph.Initials == newValues.PhotographerInitials).FirstOrDefault();
 		    if (photographer != null)
-			    existingValues.Photographer = photographer;	
-		    var race = newValues.Race.Split('.');
-		    var foundRace =
-			    _db.Races.Find(r => r.Event.EventName == race[0] && r.Distance.RaceDistance == race[1]).SingleOrDefault();
-		    if (foundRace != null)
-			    existingValues.RaceId = foundRace.Id;
+			    existingValues.Photographer = photographer;
+		    existingValues.Event = _db.Events.Find(e => e.EventName == newValues.Event).SingleOrDefault();
 		    existingValues.Sequence = newValues.Sequence;
 		    existingValues.Station = newValues.Station;
 

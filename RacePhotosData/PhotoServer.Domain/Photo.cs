@@ -11,8 +11,8 @@ namespace PhotoServer.Domain
     {
 	    public const string DEFAULTSTATION = "FinishLine";
 
-	    public virtual int  RaceId { get; set; }
-	    public Race Race { get; set; }
+	    public virtual int  EventId { get; set; }
+	    public Event Event { get; set; }
 		[MaxLength(50)]
 	    public virtual string Station { get; set; }
 		[MaxLength(10)]
@@ -48,7 +48,7 @@ namespace PhotoServer.Domain
 
 		public string SetPath()
 		{
-			Path = string.Format("{0}/{1}/{2}/{3:000}.jpg", Race.ToString(), Station, Card, Sequence);
+			Path = string.Format("{0}/{1}/{2}/{3:000}.jpg", Event.ToString(), Station, Card, Sequence);
 			return Path;
 		}
     }

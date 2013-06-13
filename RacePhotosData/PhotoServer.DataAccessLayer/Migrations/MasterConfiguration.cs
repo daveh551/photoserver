@@ -7,14 +7,14 @@ namespace PhotoServer.DataAccessLayer.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<PhotoServer.DataAccessLayer.EFPhotoServerDataSource>
+	public sealed class MasterConfiguration : DbMigrationsConfiguration<PhotoServer.DataAccessLayer.MasterDbContext>
     {
-        public Configuration()
+        public MasterConfiguration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
-        protected override void Seed(PhotoServer.DataAccessLayer.EFPhotoServerDataSource context)
+        protected override void Seed(PhotoServer.DataAccessLayer.MasterDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 
@@ -28,7 +28,7 @@ namespace PhotoServer.DataAccessLayer.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
-			context.DistanceDataSet.AddOrUpdate(d => d.Id,
+			context.Distances.AddOrUpdate(d => d.Id,
 				new Distance { Id = 1, RaceDistance = "1 Mile" },
 				new Distance { Id = 2, RaceDistance = "2 Mile" },
 				new Distance { Id = 3, RaceDistance = "5K" },
@@ -39,9 +39,11 @@ namespace PhotoServer.DataAccessLayer.Migrations
 				new Distance { Id = 8, RaceDistance = "Half Marathon" },
 				new Distance { Id = 9, RaceDistance = "Marathon" }
 				);
-			context.EventDataSet.AddOrUpdate(e => e.Id,
+			context.Events.AddOrUpdate(e => e.Id,
 				new Event { EventName = "Run For the Next Generation", Id = 1, Location = "Denton, TX", RaceDate = new DateTime(2011, 10, 22) });
 
+			context.Races.AddOrUpdate(r => r.Id,
+				new Race() { Id = 1, EventId = 1, DistanceId = 3 });
         }
     }
 }
